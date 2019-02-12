@@ -19,6 +19,11 @@ namespace percsharp.domain
             }
         }
 
+        public Vector(decimal[] data)
+        {
+            vector = data;
+        }
+
         public decimal this[int i]
         {
             get { return this.vector[i]; }
@@ -26,6 +31,23 @@ namespace percsharp.domain
         }
 
         public int Size => this.vector.Length;
+
+        #region Vector Initialization
+
+        public static implicit operator Vector(decimal[] value)
+        {
+            if (value == null) return null;
+
+            Vector result = new Vector(value.Length);
+            for(int i = 0; i < value.Length; i++)
+            {
+                result[i] = value[i];
+            }
+
+            return result;
+        }
+
+        #endregion Vector Initialization
 
         #region Vector Addition
 
@@ -94,5 +116,13 @@ namespace percsharp.domain
         }
 
         #endregion Vector Multiplication
+
+        public override string ToString()
+        {
+            if (vector == null)
+                return string.Empty;
+
+            return string.Join(",", vector);
+        }
     }
 }

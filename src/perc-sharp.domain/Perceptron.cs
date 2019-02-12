@@ -10,14 +10,14 @@ namespace percsharp.domain
     {
         private Vector Weights;
 
-        public Perceptron(int inputSize)
+        public Perceptron(Vector initWeights)
         {
-            Weights = new Vector(inputSize);
+            Weights = initWeights;
         }
 
         public bool Classify(Vector input)
         {
-            return true;
+            return input * Weights >= 0;
         }
 
         public void Learn(Vector input, int error)
