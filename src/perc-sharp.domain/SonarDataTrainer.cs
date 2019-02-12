@@ -35,8 +35,7 @@ namespace percsharp.domain
                 }
 
                 sonarData.Add(new Vector(data));
-                sonarClassification.Add(dataset[60] == "R");
-                Console.WriteLine(dataset[60]=="R");
+                sonarClassification.Add(dataset[60] == "M");
             });
         }
 
@@ -45,12 +44,22 @@ namespace percsharp.domain
             Errors = 0;
             for(int i = 0; i < sonarData.Count; i++)
             {
-                bool classification = perceptron.Classify(sonarData[i]);
-                if (classification == sonarClassification[i])
-                    continue;
-
-                Errors++;
-                perceptron.Learn(sonarData[i], sonarClassification[i] ? 1 : -1);
+                if(sonarClassification[i])
+                {
+                    if(perceptron.W * sonarData[i] < 0)
+                    {
+                        perceptron.W += sonarData[i];
+                        Errors++;
+                    }
+                }
+                else
+                {
+                    if(perceptron.W * sonarData[i] >= 0)
+                    {
+                        perceptron.W -= sonarData[i];
+                        Errors++;
+                    }
+                }
             }
         }
     }
