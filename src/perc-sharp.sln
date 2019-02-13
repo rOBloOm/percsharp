@@ -7,9 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "percsharp", "perc-sharp\per
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "percsharp.domain", "perc-sharp.domain\percsharp.domain.csproj", "{44E23454-6986-432E-AA61-562DF32CF66E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "percsharp.ui", "perc-sharp.ui\percsharp.ui.csproj", "{D058499E-6C53-41DA-82BE-66E85ABDE18A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "percsharp.res", "percsharp.res\percsharp.res.csproj", "{730C4F3A-3BAB-4B13-8153-74E54F2EC122}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8C167FAA-6E30-4AA0-A00C-61CAD4AAE37D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "percsharp.domain.test", "test\percsharp.domain.test\percsharp.domain.test.csproj", "{F43249C4-2B49-4BBD-AF14-3BD1D7508EDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "percsharp.ui", "percsharp.ui\percsharp.ui.csproj", "{57977786-83CF-4174-98B6-7E8A028EEE48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,17 +29,24 @@ Global
 		{44E23454-6986-432E-AA61-562DF32CF66E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44E23454-6986-432E-AA61-562DF32CF66E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44E23454-6986-432E-AA61-562DF32CF66E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D058499E-6C53-41DA-82BE-66E85ABDE18A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D058499E-6C53-41DA-82BE-66E85ABDE18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D058499E-6C53-41DA-82BE-66E85ABDE18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D058499E-6C53-41DA-82BE-66E85ABDE18A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{730C4F3A-3BAB-4B13-8153-74E54F2EC122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{730C4F3A-3BAB-4B13-8153-74E54F2EC122}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{730C4F3A-3BAB-4B13-8153-74E54F2EC122}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{730C4F3A-3BAB-4B13-8153-74E54F2EC122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F43249C4-2B49-4BBD-AF14-3BD1D7508EDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F43249C4-2B49-4BBD-AF14-3BD1D7508EDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F43249C4-2B49-4BBD-AF14-3BD1D7508EDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F43249C4-2B49-4BBD-AF14-3BD1D7508EDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57977786-83CF-4174-98B6-7E8A028EEE48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57977786-83CF-4174-98B6-7E8A028EEE48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57977786-83CF-4174-98B6-7E8A028EEE48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57977786-83CF-4174-98B6-7E8A028EEE48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F43249C4-2B49-4BBD-AF14-3BD1D7508EDB} = {8C167FAA-6E30-4AA0-A00C-61CAD4AAE37D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {115666C0-F7EE-4AA6-AB37-33E4B6D1B2E0}

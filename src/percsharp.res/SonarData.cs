@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace percsharp.res
 {
-    public static class Data
+    public static class SonarData
     {
         public static List<string[]> ReadSonarAll()
         {
