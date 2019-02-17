@@ -104,17 +104,17 @@ namespace percsharp.ui
             
             if(perceptron != null)
             {   //Perceptron initial weight
-                LineSeries initialWeightSeries = new LineSeries() { Color = OxyColors.Green };
+                LineSeries initialWeightSeries = new LineSeries() { Color = OxyColors.Purple };
                 initialWeightSeries.Points.Add(new DataPoint(0, 0));
-                initialWeightSeries.Points.Add(new DataPoint((double)perceptron.W[0], (double)perceptron.W[1]));
+                initialWeightSeries.Points.Add(new DataPoint((double)perceptron.InitialWeight[0], (double)perceptron.InitialWeight[1]));
 
                 PlotModelGeneratedData.Series.Add(initialWeightSeries);
                 //Perceptron learned weight
-                //LineSeries learnedWeightSeries = new LineSeries() { Color = OxyColors.Green };
-                //learnedWeightSeries.Points.Add(new DataPoint(0, 0));
-                //learnedWeightSeries.Points.Add(new DataPoint((double)perceptron.W[0], (double)perceptron.W[1]));
+                LineSeries learnedWeightSeries = new LineSeries() { Color = OxyColors.Green };
+                learnedWeightSeries.Points.Add(new DataPoint(0, 0));
+                learnedWeightSeries.Points.Add(new DataPoint((double)perceptron.W[0], (double)perceptron.W[1]));
 
-                //PlotModelGeneratedData.Series.Add(learnedWeightSeries);
+                PlotModelGeneratedData.Series.Add(learnedWeightSeries);
             }
 
             //Axis

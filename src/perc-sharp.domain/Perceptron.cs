@@ -8,12 +8,16 @@ namespace percsharp.domain
 {
     public class Perceptron
     {
+        private Vector initialWeight;
         private Vector w;
 
         public Perceptron(Vector initWeights)
         {
-            w = initWeights;
+            this.initialWeight = initWeights;
+            this.w = initWeights;
         }
+
+        public Vector InitialWeight => initialWeight;
 
         public Vector W
         {

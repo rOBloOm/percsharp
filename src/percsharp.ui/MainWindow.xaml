@@ -6,7 +6,9 @@
     xmlns:local="clr-namespace:percsharp.ui"
     xmlns:oxy="http://oxyplot.org/wpf"        
     mc:Ignorable="d"
-    Title="MainWindow" Height="450" Width="800">
+    Title="MainWindow"
+    Height="800"
+    Width="1024">
     
     <Grid>
 
@@ -20,7 +22,7 @@
         </Grid.RowDefinitions>
 
         
-        <oxy:PlotView Grid.Column="0" Grid.Row="0" x:Name="PlotGeneratedData">
+        <oxy:PlotView Height="600" Width="600" Grid.Column="0" Grid.Row="0" x:Name="PlotGeneratedData">
         </oxy:PlotView>
        
 
@@ -29,7 +31,7 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Stretch"
                     >
-            <Viewbox Width="300"></Viewbox>
+
             <Label FontSize="16" VerticalAlignment="Center">Initial Vector</Label>
             <TextBox x:Name="InputVectorX" 
                      Width="30" Height="20" 
