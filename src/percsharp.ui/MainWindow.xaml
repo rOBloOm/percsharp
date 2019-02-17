@@ -1,19 +1,59 @@
 ﻿<Window x:Class="percsharp.ui.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:percsharp.ui"
-        xmlns:oxy="http://oxyplot.org/wpf"        
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:percsharp.ui"
+    xmlns:oxy="http://oxyplot.org/wpf"        
+    mc:Ignorable="d"
+    Title="MainWindow" Height="450" Width="800">
+    
+    <Grid>
 
-        <Window.DataContext>
-            <local:MainViewModel/>
-        </Window.DataContext>
-        <Grid>
-        <oxy:PlotView x:Name="Plot" Model="{Binding PlotModel}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        
+        <oxy:PlotView Grid.Column="0" Grid.Row="0" x:Name="PlotGeneratedData">
         </oxy:PlotView>
-        </Grid>
+       
+
+        <StackPanel Grid.Column="0" Grid.Row="1" 
+                    Background="LightSlateGray"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Stretch"
+                    >
+            <Viewbox Width="300"></Viewbox>
+            <Label FontSize="16" VerticalAlignment="Center">Initial Vector</Label>
+            <TextBox x:Name="InputVectorX" 
+                     Width="30" Height="20" 
+                     VerticalAlignment="Center"
+                     Text="{Binding InputVectorXValue}"></TextBox>
+            <TextBox x:Name="InputVectorY" 
+                     Width="30" Height="20" 
+                     VerticalAlignment="Center"
+                     Text="{Binding InputVectorYValue}"></TextBox>
+            <Button 
+                    Height="30" Width="100"
+                    HorizontalAlignment="Right"
+                    Margin="10, 10"
+                    VerticalAlignment="Center"
+                Command="{Binding GenerateCommand}">Generate</Button>
+
+            <Button 
+                    Height="30" Width="100"
+                    HorizontalAlignment="Right"
+                    Margin="10, 10"
+                    VerticalAlignment="Center"
+                Command="{Binding TrainCommand}">Train</Button>
+        </StackPanel>
+
+    </Grid>
 
 </Window>
