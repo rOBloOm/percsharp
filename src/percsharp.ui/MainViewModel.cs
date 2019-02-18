@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace percsharp.ui
 {
-    public class MainViewModel
+    public class MainViewModel : INotifyPropertyChanged
     {
         public PlotModel PlotModelGeneratedData { get; set; }
         private MainWindow window;
@@ -23,6 +23,54 @@ namespace percsharp.ui
 
         public decimal InputVectorXValue { get; set; }
         public decimal InputVectorYValue { get; set; }
+
+        private string resultRuns;
+        public string ResultRuns
+        {
+            get => resultRuns;
+            set
+            {
+                resultRuns = value;
+                OnPropertyChanged(nameof(ResultRuns));
+            }
+        }
+
+        private string resultInitWeight;
+        public string ResultInitWeight
+        {
+            get => resultInitWeight;
+            set
+            {
+                resultInitWeight = value;
+                OnPropertyChanged(nameof(ResultInitWeight));
+            }
+        }
+
+        private string resultResultWeight;
+        public string ResultResultWeight
+        {
+            get => resultResultWeight;
+            set
+            {
+                resultResultWeight = value;
+                OnPropertyChanged(nameof(ResultResultWeight));
+            }
+        }
+
+        private string logText;
+        public string LogText
+        {
+            get => logText;
+            set
+            {
+                if (logText == string.Empty && value.Contains("\n"))
+                {
+                    value = value.Remove(0, 1);
+                }
+                logText = value;
+                OnPropertyChanged(nameof(LogText));
+            }
+        }
 
         public MainViewModel(MainWindow window)
         {
@@ -44,7 +92,8 @@ namespace percsharp.ui
             }
         }
 
-        private ICommand _trainCommand;
+        private ICommand _trainCommand;        
+
         public ICommand TrainCommand
         {
             get
@@ -137,6 +186,7 @@ namespace percsharp.ui
 
         public bool TrainPerceptron()
         {
+            LogText = string.Empty;
             bool convergence = false;
 
             int runs = 1;
@@ -166,11 +216,20 @@ namespace percsharp.ui
                 if(errors > 0)
                 {
                     Console.WriteLine($"Run {runs} Errors: {errors}");
+                    LogText += $"\nRun {runs} Errors: {errors}";
+
+
                     runs++;
                 }
                 else
                 {
                     Console.WriteLine($"converged. runs: {runs} learned weight: {perceptron.W}");
+                    LogText += $"\nconverged.";
+
+                    ResultRuns ="Runs: \t\t" + runs.ToString();
+                    ResultInitWeight = "Init Weight: \t" + perceptron.InitialWeight.ToString();
+                    ResultResultWeight = "Result Weight: \t" + perceptron.W.ToString();
+
                     convergence = true;
                     return true;
                 }
@@ -178,6 +237,7 @@ namespace percsharp.ui
                 if(runs > 1000)
                 {
                     Console.WriteLine("Does not converge, error");
+                    LogText += "Does not converge, error";
                     return false;
                 }
             }
@@ -195,5 +255,16 @@ namespace percsharp.ui
 
             Console.WriteLine($"Perceptron initialized with init weight: {initWeight}");
         }
+
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        #endregion INotifyPropertyChanged
     }
 }

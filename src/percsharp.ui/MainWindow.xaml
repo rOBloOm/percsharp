@@ -9,11 +9,12 @@
     Title="MainWindow"
     Height="800"
     Width="1024">
-    
+
     <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="2*" MaxWidth="600"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -21,12 +22,15 @@
             <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
 
-        
-        <oxy:PlotView Height="600" Width="600" Grid.Column="0" Grid.Row="0" x:Name="PlotGeneratedData">
+
+        <oxy:PlotView Grid.Column="0" Grid.Row="0" x:Name="PlotGeneratedData"
+                      MaxHeight="600" MaxWidth="600" 
+                      VerticalAlignment="Stretch">
         </oxy:PlotView>
-       
+
 
         <StackPanel Grid.Column="0" Grid.Row="1" 
+                    Grid.ColumnSpan="2"
                     Background="LightSlateGray"
                     Orientation="Horizontal"
                     HorizontalAlignment="Stretch"
@@ -54,6 +58,21 @@
                     Margin="10, 10"
                     VerticalAlignment="Center"
                 Command="{Binding TrainCommand}">Train</Button>
+
+        </StackPanel>
+       
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="5, 100, 10, 20">
+            <Label FontWeight="Bold">Result:</Label>
+            <Label  x:Name="labelResultRuns" Content="{Binding ResultRuns}"></Label>
+            <StackPanel Orientation="Vertical">
+                <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitWeight" Content="{Binding ResultInitWeight}"></Label>
+                <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultWeight" Content="{Binding ResultResultWeight}"></Label>
+            </StackPanel>
+            <Label FontWeight="Bold">Training Log:</Label>
+            <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <TextBox VerticalAlignment="Stretch" 
+                     Text="{Binding LogText}"/>
+            </ScrollViewer>
         </StackPanel>
 
     </Grid>
