@@ -69,11 +69,9 @@
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="5, 100, 10, 20">
             <Label FontWeight="Bold">Result:</Label>
             <Label  x:Name="labelResultRuns" Content="{Binding ResultRuns}"></Label>
-            <StackPanel Orientation="Vertical">
-                <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitWeight" Content="{Binding ResultInitWeight}"></Label>
+            <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitWeight" Content="{Binding ResultInitWeight}"></Label>
                 <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultWeight" Content="{Binding ResultResultWeight}"></Label>
-            </StackPanel>
-            <Label FontWeight="Bold">Training Log:</Label>
+                <Label FontWeight="Bold">Training Log:</Label>
             <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
             <TextBox VerticalAlignment="Stretch" 
                      Text="{Binding LogText}"/>

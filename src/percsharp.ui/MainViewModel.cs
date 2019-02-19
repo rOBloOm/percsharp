@@ -198,7 +198,7 @@ namespace percsharp.ui
 
                 generator.Positives.ForEach(v =>
                 {
-                    if(v * perceptron.W <= 0)
+                    if(v * perceptron.W + perceptron.Bias <= 0)
                     {
                         perceptron.W += v;
                         perceptron.Bias += (decimal)v.Magnitude;
