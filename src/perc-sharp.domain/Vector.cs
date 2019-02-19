@@ -46,6 +46,11 @@ namespace percsharp.domain
             }
         }
 
+        public Vector UnitVector()
+        {
+            return this * (1 / Magnitude);
+        }
+
         #region Vector Initialization
 
         public static implicit operator Vector(decimal[] value)

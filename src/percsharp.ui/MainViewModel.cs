@@ -47,6 +47,17 @@ namespace percsharp.ui
             }
         }
 
+        private string resultInitBias;
+        public string ResultInitBias
+        {
+            get => resultInitBias;
+            set
+            {
+                resultInitBias = value;
+                OnPropertyChanged(nameof(ResultInitBias));
+            }
+        }
+
         private string resultResultWeight;
         public string ResultResultWeight
         {
@@ -55,6 +66,17 @@ namespace percsharp.ui
             {
                 resultResultWeight = value;
                 OnPropertyChanged(nameof(ResultResultWeight));
+            }
+        }
+
+        private string resultResultBias;
+        public string ResultResultBias
+        {
+            get => resultResultBias;
+            set
+            {
+                resultResultBias = value;
+                OnPropertyChanged(nameof(ResultResultBias));
             }
         }
 
@@ -221,7 +243,7 @@ namespace percsharp.ui
                     Console.WriteLine($"Run {runs} Errors: {errors}");
                     LogText += $"\nRun {runs} Errors: {errors}";
 
-
+                    perceptron.W = perceptron.W.UnitVector();
                     runs++;
                 }
                 else
@@ -231,7 +253,9 @@ namespace percsharp.ui
 
                     ResultRuns ="Runs: \t\t" + runs.ToString();
                     ResultInitWeight = "Init Weight: \t" + perceptron.InitialWeight.ToString();
+                    ResultInitBias = "Init Bias: \t" + perceptron.InitialBias;
                     ResultResultWeight = "Result Weight: \t" + perceptron.W.ToString();
+                    ResultResultBias = "Result Bias: \t" + perceptron.Bias;
 
                     convergence = true;
                     return true;
@@ -254,7 +278,8 @@ namespace percsharp.ui
             decimal rx = (decimal)rnd.Next(-10, 10) / 10;
             decimal ry = (decimal)rnd.Next(-10, 10) / 10;
             Vector initWeight = new Vector(new decimal[] { rx, ry });
-            perceptron = new Perceptron(initWeight, (decimal)rnd.Next(-10, 10) / 10);
+            decimal initBias = (decimal)rnd.Next(-10, 10) / 10;
+            perceptron = new Perceptron(initWeight, initBias);
 
             Console.WriteLine($"Perceptron initialized with init weight: {perceptron.InitialWeight} and bias {perceptron.InitialBias}");
         }

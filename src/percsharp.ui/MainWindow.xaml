@@ -70,12 +70,12 @@
             <Label FontWeight="Bold">Result:</Label>
             <Label  x:Name="labelResultRuns" Content="{Binding ResultRuns}"></Label>
             <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitWeight" Content="{Binding ResultInitWeight}"></Label>
-                <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultWeight" Content="{Binding ResultResultWeight}"></Label>
-                <Label FontWeight="Bold">Training Log:</Label>
-            <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitBias" Content="{Binding ResultInitBias}"></Label>
+            <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultWeight" Content="{Binding ResultResultWeight}"></Label>
+            <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultBias" Content="{Binding ResultResultBias}"></Label>
+            <Label FontWeight="Bold">Training Log:</Label>
             <TextBox VerticalAlignment="Stretch" 
                      Text="{Binding LogText}"/>
-            </ScrollViewer>
         </StackPanel>
 
     </Grid>
