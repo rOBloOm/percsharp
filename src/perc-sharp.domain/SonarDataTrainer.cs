@@ -21,7 +21,7 @@ namespace percsharp.domain
         public SonarDataTrainer(List<string[]> csvData)
         {
             Vector initWeights = new Vector(60);
-            perceptron = new Perceptron(initWeights);
+            perceptron = new Perceptron(initWeights, 0);
 
             sonarData = new List<Vector>();
             sonarClassification = new List<bool>();

@@ -15,10 +15,12 @@ namespace percsharp.domain
         private int dimension;
 
         private Vector initVector;
+        private decimal deviation;
 
-        public DataGeneratorLinearSeparable(Vector initVector, int size, int dimension)
+        public DataGeneratorLinearSeparable(Vector initVector, decimal deviation, int size, int dimension)
         {
             this.initVector = initVector;
+            this.deviation = deviation;
             this.size = size;
             this.dimension = dimension;
         }
@@ -27,6 +29,7 @@ namespace percsharp.domain
         public int Dimension => dimension;
 
         public Vector InitVector => initVector;
+        public decimal Deviation => deviation;
 
         public List<Vector> Positives => postitives;
         public List<Vector> Negatives => negatives;
@@ -44,10 +47,10 @@ namespace percsharp.domain
 
                 for(int d = 0; d < dimension; d++)
                 {
-                    data[d] = (decimal)rnd.Next(-10, 10) / 10;
+                    data[d] = ((decimal)rnd.Next(-10, 10) / 10);
                 }
 
-                if(data * initVector > 0)
+                if(data * initVector + deviation > 0)
                 {
                     postitives.Add(data);
                 }

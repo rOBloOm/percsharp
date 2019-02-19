@@ -13,7 +13,7 @@ namespace percsharp.domain
         public Vector(int size)
         {
             vector = new decimal[size];
-            for(int i = 0; i < size; i++ )
+            for (int i = 0; i < size; i++)
             {
                 vector[i] = 0;
             }
@@ -27,10 +27,24 @@ namespace percsharp.domain
         public decimal this[int i]
         {
             get { return this.vector[i]; }
-            set { this.vector[i] = value;  }
+            set { this.vector[i] = value; }
         }
 
         public int Size => this.vector.Length;
+
+        public decimal Magnitude
+        {
+            get
+            {
+                double sum = 0;
+                for(int i = 0; i < vector.Length; i++)
+                {
+                    sum += Math.Pow((double)vector[i], 2);
+                }
+
+                return (decimal)Math.Sqrt(sum);
+            }
+        }
 
         #region Vector Initialization
 

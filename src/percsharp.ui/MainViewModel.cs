@@ -23,6 +23,7 @@ namespace percsharp.ui
 
         public decimal InputVectorXValue { get; set; }
         public decimal InputVectorYValue { get; set; }
+        public decimal InputDeviation { get; set; }
 
         private string resultRuns;
         public string ResultRuns
@@ -111,7 +112,7 @@ namespace percsharp.ui
 
         public DataGeneratorLinearSeparable GenerateData()
         {
-            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { this.InputVectorXValue, this.InputVectorYValue }), 100, 2);
+            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { this.InputVectorXValue, this.InputVectorYValue }), this.InputDeviation, 100, 2);
             generator.run();
 
             return generator;
@@ -200,15 +201,17 @@ namespace percsharp.ui
                     if(v * perceptron.W <= 0)
                     {
                         perceptron.W += v;
+                        perceptron.Bias += (decimal)v.Magnitude;
                         errors++;
                     }
                 });
 
                 generator.Negatives.ForEach(v =>
                 {
-                    if(v * perceptron.W > 0)
+                    if(v * perceptron.W + perceptron.Bias > 0)
                     {
                         perceptron.W -= v;
+                        perceptron.Bias -= (decimal)v.Magnitude;
                         errors++;
                     }
                 });
@@ -251,9 +254,9 @@ namespace percsharp.ui
             decimal rx = (decimal)rnd.Next(-10, 10) / 10;
             decimal ry = (decimal)rnd.Next(-10, 10) / 10;
             Vector initWeight = new Vector(new decimal[] { rx, ry });
-            perceptron = new Perceptron(initWeight);
+            perceptron = new Perceptron(initWeight, (decimal)rnd.Next(-10, 10) / 10);
 
-            Console.WriteLine($"Perceptron initialized with init weight: {initWeight}");
+            Console.WriteLine($"Perceptron initialized with init weight: {perceptron.InitialWeight} and bias {perceptron.InitialBias}");
         }
 
         #region INotifyPropertyChanged

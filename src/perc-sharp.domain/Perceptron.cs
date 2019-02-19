@@ -9,15 +9,20 @@ namespace percsharp.domain
     public class Perceptron
     {
         private Vector initialWeight;
+        private decimal initialBias;
         private Vector w;
+        private decimal b;
 
-        public Perceptron(Vector initWeights)
+        public Perceptron(Vector initWeights, decimal initBias)
         {
             this.initialWeight = initWeights;
+            this.initialBias = initialBias;
             this.w = initWeights;
+            this.b = initBias;
         }
 
         public Vector InitialWeight => initialWeight;
+        public decimal InitialBias => initialBias;
 
         public Vector W
         {
@@ -28,21 +33,18 @@ namespace percsharp.domain
             }
         }
 
-        public bool Classify(Vector input)
+        public decimal Bias
         {
-            return input * w < 0;
+            get => b;
+            set
+            {
+                b = value;
+            }
         }
 
-        public void Learn(Vector input, int error)
+        public bool Classify(Vector input)
         {
-            if(error < 0)
-            {
-                w += input;
-            }
-            else if (error >= 0)
-            {
-                w -= input;
-            }
+            return input * w  + b < 0;
         }
     }
 }
