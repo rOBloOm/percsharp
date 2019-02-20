@@ -36,7 +36,7 @@
                     HorizontalAlignment="Stretch"
                     >
 
-            <Label FontSize="16" VerticalAlignment="Center">Initial Vector</Label>
+            <Label FontSize="16" VerticalAlignment="Center">Initial Vector:</Label>
             <TextBox x:Name="InputVectorX" 
                      Width="30" Height="20" 
                      VerticalAlignment="Center"
@@ -45,11 +45,30 @@
                      Width="30" Height="20" 
                      VerticalAlignment="Center"
                      Text="{Binding InputVectorYValue}"></TextBox>
-            <Label FontSize="16" VerticalAlignment="Center">Deviation</Label>
+            <Label FontSize="16" VerticalAlignment="Center">Deviation:</Label>
             <TextBox x:Name="InputDeviation" 
                      Width="30" Height="20" 
                      VerticalAlignment="Center"
                      Text="{Binding InputDeviation}"></TextBox>
+            <Label FontSize="16" VerticalAlignment="Center">Learning Rate:</Label>
+            <TextBox x:Name="InputLearningRate" 
+                     Width="30" Height="20" 
+                     VerticalAlignment="Center"
+                     Text="{Binding InputLearningRate}"></TextBox>
+            <Label FontSize="16" VerticalAlignment="Center">Init Weight:</Label>
+            <TextBox x:Name="InputInitVectorX" 
+                     Width="30" Height="20" 
+                     VerticalAlignment="Center"
+                     Text="{Binding InputInitVectorXValue}"></TextBox>
+            <TextBox x:Name="InputInitVectorY" 
+                     Width="30" Height="20" 
+                     VerticalAlignment="Center"
+                     Text="{Binding InputInitVectorYValue}"></TextBox>
+            <Label FontSize="16" VerticalAlignment="Center">Init Bias:</Label>
+            <TextBox x:Name="InitBias" 
+                     Width="30" Height="20" 
+                     VerticalAlignment="Center"
+                     Text="{Binding InputInitBias}"></TextBox>
             <Button 
                     Height="30" Width="100"
                     HorizontalAlignment="Right"
@@ -68,11 +87,20 @@
        
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="5, 100, 10, 20">
             <Label FontWeight="Bold">Result:</Label>
-            <Label  x:Name="labelResultRuns" Content="{Binding ResultRuns}"></Label>
-            <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitWeight" Content="{Binding ResultInitWeight}"></Label>
-            <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitBias" Content="{Binding ResultInitBias}"></Label>
-            <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultWeight" Content="{Binding ResultResultWeight}"></Label>
-            <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultBias" Content="{Binding ResultResultBias}"></Label>
+            <StackPanel Orientation="Horizontal">
+                <Label  x:Name="labelResultRuns" Content="{Binding ResultRuns}"></Label>
+                <Label x:Name="labelLearningRate" Content="{Binding ResultLearningRate}"></Label>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical">
+                    <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitWeight" Content="{Binding ResultInitWeight}"></Label>
+                    <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitBias" Content="{Binding ResultInitBias}"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultWeight" Content="{Binding ResultResultWeight}"></Label>
+                    <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultBias" Content="{Binding ResultResultBias}"></Label>
+                </StackPanel>
+            </StackPanel>
             <Label FontWeight="Bold">Training Log:</Label>
             <TextBox VerticalAlignment="Stretch" 
                      Text="{Binding LogText}"/>

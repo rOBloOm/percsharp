@@ -12,6 +12,8 @@ namespace percsharp.domain
         private decimal initialBias;
         private Vector w;
         private decimal b;
+        private decimal r = 0.1M;
+
 
         public Perceptron(Vector initWeights, decimal initBias)
         {
@@ -39,6 +41,15 @@ namespace percsharp.domain
             set
             {
                 b = value;
+            }
+        }
+
+        public decimal R
+        {
+            get => r;
+            set
+            {
+                r = value;
             }
         }
 

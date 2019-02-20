@@ -134,6 +134,11 @@ namespace percsharp.domain
             return result;
         }
 
+        public static Vector operator *(decimal scalar, Vector v1)
+        {
+            return v1 * scalar;
+        }
+
         #endregion Vector Multiplication
 
         public override string ToString()

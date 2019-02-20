@@ -24,6 +24,10 @@ namespace percsharp.ui
         public decimal InputVectorXValue { get; set; }
         public decimal InputVectorYValue { get; set; }
         public decimal InputDeviation { get; set; }
+        public decimal InputLearningRate { get; set; }
+        public decimal InputInitVectorXValue { get; set; }
+        public decimal InputInitVectorYValue { get; set; }
+        public decimal InputInitBias { get; set; }
 
         private string resultRuns;
         public string ResultRuns
@@ -33,6 +37,17 @@ namespace percsharp.ui
             {
                 resultRuns = value;
                 OnPropertyChanged(nameof(ResultRuns));
+            }
+        }
+
+        private string resultLearningRate;
+        public string ResultLearningRate
+        {
+            get => resultLearningRate;
+            set
+            {
+                resultLearningRate = value;
+                OnPropertyChanged(nameof(ResultLearningRate));
             }
         }
 
@@ -99,8 +114,16 @@ namespace percsharp.ui
         {
             this.window = window;
 
+            //Generator Input Values
             this.InputVectorXValue = 1;
             this.InputVectorYValue = 0;
+            this.InputLearningRate = 1;
+
+            //Lean Input Values
+            this.InputInitVectorXValue = 0;
+            this.InputInitVectorYValue = 0;
+            this.InputInitBias = 0;
+
 
             generator = GenerateData();
             PlotGeneratedDataData(generator);
@@ -220,20 +243,18 @@ namespace percsharp.ui
 
                 generator.Positives.ForEach(v =>
                 {
-                    if(v * perceptron.W + perceptron.Bias <= 0)
+                    if((v * perceptron.W) <= 0)
                     {
-                        perceptron.W += v;
-                        perceptron.Bias += (decimal)v.Magnitude;
+                        perceptron.W += perceptron.R * v;
                         errors++;
                     }
                 });
 
                 generator.Negatives.ForEach(v =>
                 {
-                    if(v * perceptron.W + perceptron.Bias > 0)
+                    if((v * perceptron.W) > 0)
                     {
-                        perceptron.W -= v;
-                        perceptron.Bias -= (decimal)v.Magnitude;
+                        perceptron.W -= perceptron.R * v;
                         errors++;
                     }
                 });
@@ -243,7 +264,6 @@ namespace percsharp.ui
                     Console.WriteLine($"Run {runs} Errors: {errors}");
                     LogText += $"\nRun {runs} Errors: {errors}";
 
-                    perceptron.W = perceptron.W.UnitVector();
                     runs++;
                 }
                 else
@@ -251,17 +271,18 @@ namespace percsharp.ui
                     Console.WriteLine($"converged. runs: {runs} learned weight: {perceptron.W}");
                     LogText += $"\nconverged.";
 
-                    ResultRuns ="Runs: \t\t" + runs.ToString();
-                    ResultInitWeight = "Init Weight: \t" + perceptron.InitialWeight.ToString();
+                    ResultRuns = "Runs: \t\t" + runs.ToString() + "\t";
+                    ResultLearningRate = "Learning Rate: \t" + perceptron.R;
+                    ResultInitWeight = "Init Weight: \t" + perceptron.InitialWeight.ToString() + "\t";
                     ResultInitBias = "Init Bias: \t" + perceptron.InitialBias;
-                    ResultResultWeight = "Result Weight: \t" + perceptron.W.ToString();
+                    ResultResultWeight = "Result Weight: \t" + perceptron.W.ToString() + "\t";
                     ResultResultBias = "Result Bias: \t" + perceptron.Bias;
 
                     convergence = true;
                     return true;
                 }
 
-                if(runs > 1000)
+                if(runs > 2000)
                 {
                     Console.WriteLine("Does not converge, error");
                     LogText += "Does not converge, error";
@@ -275,11 +296,12 @@ namespace percsharp.ui
         private void InitPerceptron()
         {
             Random rnd = new Random();
-            decimal rx = (decimal)rnd.Next(-10, 10) / 10;
-            decimal ry = (decimal)rnd.Next(-10, 10) / 10;
+            decimal rx = InputInitVectorXValue != 0 ? InputInitVectorXValue : (decimal)rnd.Next(-10, 10) / 10;
+            decimal ry = InputInitVectorYValue != 0 ? InputInitVectorYValue : (decimal)rnd.Next(-10, 10) / 10;
             Vector initWeight = new Vector(new decimal[] { rx, ry });
-            decimal initBias = (decimal)rnd.Next(-10, 10) / 10;
+            decimal initBias = 0;// (decimal)rnd.Next(-10, 10) / 10;
             perceptron = new Perceptron(initWeight, initBias);
+            perceptron.R = InputLearningRate;
 
             Console.WriteLine($"Perceptron initialized with init weight: {perceptron.InitialWeight} and bias {perceptron.InitialBias}");
         }
