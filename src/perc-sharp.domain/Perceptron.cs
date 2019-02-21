@@ -15,12 +15,14 @@ namespace percsharp.domain
         private decimal r = 0.1M;
 
 
-        public Perceptron(Vector initWeights, decimal initBias)
+        public Perceptron(Vector initWeights, decimal initBias, decimal learningRate)
         {
             this.initialWeight = initWeights;
             this.initialBias = initialBias;
             this.w = initWeights;
             this.b = initBias;
+
+            this.r = learningRate;
         }
 
         public Vector InitialWeight => initialWeight;
@@ -43,16 +45,7 @@ namespace percsharp.domain
                 b = value;
             }
         }
-
-        public decimal R
-        {
-            get => r;
-            set
-            {
-                r = value;
-            }
-        }
-
+        
         public bool Classify(Vector input)
         {
             return input * w  + b < 0;

@@ -19,7 +19,7 @@ namespace percsharp.ui
         private MainWindow window;
 
         private DataGeneratorLinearSeparable generator;
-        private Perceptron perceptron;
+        NeuralNetworkPerceptron nn;
 
         public decimal InputVectorXValue { get; set; }
         public decimal InputVectorYValue { get; set; }
@@ -149,10 +149,10 @@ namespace percsharp.ui
         }
 
         public void GenerateClicked()
-        {
-            perceptron = null;
+        {            
             generator = GenerateData();
             PlotGeneratedDataData(generator);
+            if (nn != null) nn.Reset();
         }
 
         public DataGeneratorLinearSeparable GenerateData()
@@ -197,17 +197,17 @@ namespace percsharp.ui
             PlotModelGeneratedData.Series.Add(initVectorSeries);
 
             
-            if(perceptron != null)
+            if(nn != null)
             {   //Perceptron initial weight
                 LineSeries initialWeightSeries = new LineSeries() { Color = OxyColors.Purple };
                 initialWeightSeries.Points.Add(new DataPoint(0, 0));
-                initialWeightSeries.Points.Add(new DataPoint((double)perceptron.InitialWeight[0], (double)perceptron.InitialWeight[1]));
+                initialWeightSeries.Points.Add(new DataPoint((double)nn.InitWeight[0], (double)nn.InitWeight[1]));
 
                 PlotModelGeneratedData.Series.Add(initialWeightSeries);
                 //Perceptron learned weight
                 LineSeries learnedWeightSeries = new LineSeries() { Color = OxyColors.Green };
                 learnedWeightSeries.Points.Add(new DataPoint(0, 0));
-                learnedWeightSeries.Points.Add(new DataPoint((double)perceptron.W[0], (double)perceptron.W[1]));
+                learnedWeightSeries.Points.Add(new DataPoint((double)nn.CurrentWeight[0], (double)nn.CurrentWeight[1]));
 
                 PlotModelGeneratedData.Series.Add(learnedWeightSeries);
             }
@@ -230,80 +230,42 @@ namespace percsharp.ui
             if (successful) PlotGeneratedDataData(generator);
         }
 
-        public bool TrainPerceptron()
+        private bool TrainPerceptron()
         {
-            LogText = string.Empty;
-            bool convergence = false;
+            bool converged = nn.TrainRun(generator.Positives, generator.Negatives);
 
-            int runs = 1;
+            ResultRuns = "Runs: \t\t" + nn.Runs.ToString() + "\t";
+            ResultLearningRate = "Learning Rate: \t" + nn.LearningRate;
+            ResultInitWeight = "Init Weight: \t" + nn.InitWeight.ToString() + "\t";
+            ResultInitBias = "Init Bias: \t" + nn.InitBias;
+            ResultResultWeight = "Result Weight: \t" + nn.CurrentWeight.ToString() + "\t";
+            ResultResultBias = "Result Bias: \t" + nn.CurrentBias;
 
-            while(!convergence)
+            if (!converged)
             {
-                int errors = 0;
-
-                generator.Positives.ForEach(v =>
-                {
-                    if((v * perceptron.W) <= 0)
-                    {
-                        perceptron.W += perceptron.R * v;
-                        errors++;
-                    }
-                });
-
-                generator.Negatives.ForEach(v =>
-                {
-                    if((v * perceptron.W) > 0)
-                    {
-                        perceptron.W -= perceptron.R * v;
-                        errors++;
-                    }
-                });
-
-                if(errors > 0)
-                {
-                    Console.WriteLine($"Run {runs} Errors: {errors}");
-                    LogText += $"\nRun {runs} Errors: {errors}";
-
-                    runs++;
-                }
-                else
-                {
-                    Console.WriteLine($"converged. runs: {runs} learned weight: {perceptron.W}");
-                    LogText += $"\nconverged.";
-
-                    ResultRuns = "Runs: \t\t" + runs.ToString() + "\t";
-                    ResultLearningRate = "Learning Rate: \t" + perceptron.R;
-                    ResultInitWeight = "Init Weight: \t" + perceptron.InitialWeight.ToString() + "\t";
-                    ResultInitBias = "Init Bias: \t" + perceptron.InitialBias;
-                    ResultResultWeight = "Result Weight: \t" + perceptron.W.ToString() + "\t";
-                    ResultResultBias = "Result Bias: \t" + perceptron.Bias;
-
-                    convergence = true;
-                    return true;
-                }
-
-                if(runs > 2000)
-                {
-                    Console.WriteLine("Does not converge, error");
-                    LogText += "Does not converge, error";
-                    return false;
-                }
+                LogText = "Error! Does Not converge";
+                return false;
             }
-
-            return false;
+            else
+            {
+                LogText = "Converged successfully";
+                return true;
+            }
         }
+
+
 
         private void InitPerceptron()
         {
             Random rnd = new Random();
             decimal rx = InputInitVectorXValue != 0 ? InputInitVectorXValue : (decimal)rnd.Next(-10, 10) / 10;
             decimal ry = InputInitVectorYValue != 0 ? InputInitVectorYValue : (decimal)rnd.Next(-10, 10) / 10;
-            Vector initWeight = new Vector(new decimal[] { rx, ry });
+            decimal[] initWeight = new decimal[] { rx, ry };
             decimal initBias = 0;// (decimal)rnd.Next(-10, 10) / 10;
-            perceptron = new Perceptron(initWeight, initBias);
-            perceptron.R = InputLearningRate;
 
-            Console.WriteLine($"Perceptron initialized with init weight: {perceptron.InitialWeight} and bias {perceptron.InitialBias}");
+            nn = new NeuralNetworkPerceptron(initWeight, initBias, 1);
+
+            Console.WriteLine($"NeuralNetworkPerceptron initialized with init weight: {nn.InitWeight} and bias {nn.InitBias}");
         }
 
         #region INotifyPropertyChanged
