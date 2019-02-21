@@ -230,6 +230,20 @@ namespace percsharp.ui
             if (successful) PlotGeneratedDataData(generator);
         }
 
+        private void InitPerceptron()
+        {
+            Random rnd = new Random();
+            decimal rx = InputInitVectorXValue != 0 ? InputInitVectorXValue : (decimal)rnd.Next(-10, 10) / 10;
+            decimal ry = InputInitVectorYValue != 0 ? InputInitVectorYValue : (decimal)rnd.Next(-10, 10) / 10;
+            decimal learnRate = InputLearningRate;
+            decimal[] initWeight = new decimal[] { rx, ry };
+            decimal initBias = 0;// (decimal)rnd.Next(-10, 10) / 10;
+
+            nn = new NeuralNetworkPerceptron(initWeight, initBias, learnRate);
+
+            Console.WriteLine($"NeuralNetworkPerceptron initialized with init weight: {nn.InitWeight} and bias {nn.InitBias}");
+        }
+
         private bool TrainPerceptron()
         {
             bool converged = nn.TrainRun(generator.Positives, generator.Negatives);
@@ -252,21 +266,7 @@ namespace percsharp.ui
                 return true;
             }
         }
-
-
-
-        private void InitPerceptron()
-        {
-            Random rnd = new Random();
-            decimal rx = InputInitVectorXValue != 0 ? InputInitVectorXValue : (decimal)rnd.Next(-10, 10) / 10;
-            decimal ry = InputInitVectorYValue != 0 ? InputInitVectorYValue : (decimal)rnd.Next(-10, 10) / 10;
-            decimal[] initWeight = new decimal[] { rx, ry };
-            decimal initBias = 0;// (decimal)rnd.Next(-10, 10) / 10;
-
-            nn = new NeuralNetworkPerceptron(initWeight, initBias, 1);
-
-            Console.WriteLine($"NeuralNetworkPerceptron initialized with init weight: {nn.InitWeight} and bias {nn.InitBias}");
-        }
+        
 
         #region INotifyPropertyChanged
 
