@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Title="MainWindow"
     Height="800"
-    Width="1400">
+    Width="1410">
 
     <Grid>
 
@@ -22,21 +22,6 @@
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
-
-        <!--<StackPanel Grid.Column="0">
-            <Label FontWeight="Bold" FontSize="16" >Test Data</Label>
-            <StackPanel Orientation="Horizontal">
-                <Label>Weight</Label>
-                <Label>X:</Label>
-                <TextBox Width="30"></TextBox>
-                <Label>Y:</Label>
-                <TextBox Width="30"></TextBox>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label>Bias</Label>
-                <TextBox Width="30"></TextBox>
-            </StackPanel>
-        </StackPanel>-->
 
         <StackPanel Grid.Column="0" Margin="5, 50, 10, 20">
             <GroupBox Header="Test Data" Margin="10">
@@ -69,7 +54,7 @@
                     <Button Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="7" 
                             Width="80" HorizontalAlignment="Right" 
                             Margin="0, 10, 0, 0">Generate</Button>
-                    
+
                 </Grid>
             </GroupBox>
             <GroupBox Header="Training" Margin="10, 0, 10, 10">
@@ -99,7 +84,7 @@
                     <Label Grid.Column="5" HorizontalAlignment="Right">Learning Rate</Label>
                     <TextBox Grid.Column="6" Grid.Row="0" HorizontalAlignment="left"
                              Width="30"></TextBox>
-                    
+
                     <Label Grid.Column="0" Grid.Row="1">Init Bias</Label>
                     <TextBox Grid.Column="2" Grid.Row="1" Width="30"></TextBox>
 
@@ -110,13 +95,10 @@
                         <Button Width="80" Margin="0, 0, 10, 0">Train Step</Button>
                         <Button Width="80" Margin="0, 0, 0, 0">Run</Button>
                     </StackPanel>
-                    
+
                 </Grid>
             </GroupBox>
         </StackPanel>
-        <Grid Grid.Column="0">
-
-        </Grid>
 
         <oxy:PlotView Grid.Column="1" Grid.Row="0" x:Name="PlotGeneratedData"
                       VerticalAlignment="Top"
@@ -180,27 +162,28 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical" Margin="5, 50, 10, 20" Width="400">
-            <Label FontWeight="Bold">Result:</Label>
-            <StackPanel Orientation="Horizontal">
-                <Label  x:Name="labelResultRuns" Content="{Binding ResultRuns}"></Label>
-                <Label x:Name="labelLearningRate" Content="{Binding ResultLearningRate}"></Label>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <StackPanel Orientation="Vertical">
-                    <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitWeight" Content="{Binding ResultInitWeight}"></Label>
-                    <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitBias" Content="{Binding ResultInitBias}"></Label>
+        <StackPanel Grid.Row="0" Grid.Column="2" Margin="5, 50, 10, 20">
+            <GroupBox Header="Result" Margin="10">
+                <StackPanel  Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label  x:Name="labelResultRuns" Content="{Binding ResultRuns}"></Label>
+                        <Label x:Name="labelLearningRate" Content="{Binding ResultLearningRate}"></Label>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitWeight" Content="{Binding ResultInitWeight}"></Label>
+                            <Label FontWeight="Bold" Foreground="Purple" x:Name="labelResultInitBias" Content="{Binding ResultInitBias}"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultWeight" Content="{Binding ResultResultWeight}"></Label>
+                            <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultBias" Content="{Binding ResultResultBias}"></Label>
+                        </StackPanel>
+                    </StackPanel>
+                    <Label FontWeight="Bold">Training Log:</Label>
+                    <Label VerticalAlignment="Stretch" Content="{Binding LogText}"/>
                 </StackPanel>
-                <StackPanel Orientation="Vertical">
-                    <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultWeight" Content="{Binding ResultResultWeight}"></Label>
-                    <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultBias" Content="{Binding ResultResultBias}"></Label>
-                </StackPanel>
-            </StackPanel>
-            <Label FontWeight="Bold">Training Log:</Label>
-            <TextBox VerticalAlignment="Stretch" 
-                     Text="{Binding LogText}"/>
+            </GroupBox>
         </StackPanel>
-
     </Grid>
 
 </Window>

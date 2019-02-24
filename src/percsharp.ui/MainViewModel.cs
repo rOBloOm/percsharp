@@ -29,6 +29,8 @@ namespace percsharp.ui
         public decimal InputInitVectorYValue { get; set; }
         public decimal InputInitBias { get; set; }
 
+        #region Properties
+
         private string resultRuns;
         public string ResultRuns
         {
@@ -110,6 +112,31 @@ namespace percsharp.ui
             }
         }
 
+        #endregion Properties
+
+        #region Properties Commands
+
+        private ICommand _generateCommand;
+        public ICommand GenerateCommand
+        {
+            get
+            {
+                return _generateCommand ?? (_generateCommand = new CommandHandler(() => GenerateClicked(), true));
+            }
+        }
+
+        private ICommand _trainCommand;
+
+        public ICommand TrainCommand
+        {
+            get
+            {
+                return _trainCommand ?? (_trainCommand = new CommandHandler(() => TrainPerceptronClick(), true));
+            }
+        }
+
+        #endregion Properties Command
+
         public MainViewModel(MainWindow window)
         {
             this.window = window;
@@ -127,26 +154,7 @@ namespace percsharp.ui
 
             generator = GenerateData();
             PlotState(generator);
-        }
-
-        private ICommand _generateCommand;
-        public ICommand GenerateCommand
-        {
-            get
-            {
-                return _generateCommand ?? (_generateCommand = new CommandHandler(() => GenerateClicked(), true));
-            }
-        }
-
-        private ICommand _trainCommand;        
-
-        public ICommand TrainCommand
-        {
-            get
-            {
-                return _trainCommand ?? (_trainCommand = new CommandHandler(() => TrainPerceptronClick(), true));
-            }
-        }
+        }               
 
         public void GenerateClicked()
         {            
