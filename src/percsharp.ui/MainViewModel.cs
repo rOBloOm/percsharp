@@ -126,7 +126,7 @@ namespace percsharp.ui
 
 
             generator = GenerateData();
-            PlotGeneratedDataData(generator);
+            PlotState(generator);
         }
 
         private ICommand _generateCommand;
@@ -151,19 +151,27 @@ namespace percsharp.ui
         public void GenerateClicked()
         {            
             generator = GenerateData();
-            PlotGeneratedDataData(generator);
+            PlotState(generator);
             if (nn != null) nn.Reset();
+        }        
+
+        public void TrainPerceptronClick()
+        {
+            InitPerceptron();
+            bool successful = TrainPerceptron();
+            if (successful) PlotState(generator);
+
         }
 
         public DataGeneratorLinearSeparable GenerateData()
         {
+            nn = null;
             DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { this.InputVectorXValue, this.InputVectorYValue }), this.InputDeviation, 100, 2);
             generator.run();
 
             return generator;
         }
-
-        private void PlotGeneratedDataData(DataGeneratorLinearSeparable generator)
+        private void PlotState(DataGeneratorLinearSeparable generator)
         {
             if (PlotModelGeneratedData != null)
                 PlotModelGeneratedData.InvalidatePlot(false);
@@ -221,14 +229,7 @@ namespace percsharp.ui
             plotView.Model = PlotModelGeneratedData;
             plotView.InvalidatePlot(true);
             plotView.InvalidateVisual();
-        }
-
-        public void TrainPerceptronClick()
-        {
-            InitPerceptron();
-            bool successful = TrainPerceptron();
-            if (successful) PlotGeneratedDataData(generator);
-        }
+        }        
 
         private void InitPerceptron()
         {
