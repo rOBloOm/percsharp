@@ -29,7 +29,7 @@ namespace percsharp.domain
         public int Dimension => dimension;
 
         public Vector InitVector => initVector;
-        public decimal Deviation => deviation;
+        public decimal InitBias => deviation;
 
         public List<Vector> Positives => postitives;
         public List<Vector> Negatives => negatives;

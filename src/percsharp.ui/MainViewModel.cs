@@ -21,13 +21,16 @@ namespace percsharp.ui
         private DataGeneratorLinearSeparable generator;
         NeuralNetworkPerceptron nn;
 
-        public decimal InputVectorXValue { get; set; }
-        public decimal InputVectorYValue { get; set; }
-        public decimal InputDeviation { get; set; }
-        public decimal InputLearningRate { get; set; }
-        public decimal InputInitVectorXValue { get; set; }
-        public decimal InputInitVectorYValue { get; set; }
-        public decimal InputInitBias { get; set; }
+        public string InputTestDataVectorXValue { get; set; }
+        public string InputTestDataVectorYValue { get; set; }
+        public string InputTestDataDataPoints { get; set; }
+        public string InputTestDataBias { get; set; }
+
+        public string InputTrainDataVectorXValue { get; set; }
+        public string InputTrainDataVectorYValue { get; set; }
+
+        public string InputTrainDataLearningRate { get; set; }
+        public string InputTrainDataInitBias { get; set; }
 
         #region Properties
 
@@ -142,14 +145,16 @@ namespace percsharp.ui
             this.window = window;
 
             //Generator Input Values
-            this.InputVectorXValue = 1;
-            this.InputVectorYValue = 0;
-            this.InputLearningRate = 1;
+            this.InputTestDataVectorXValue = "1";
+            this.InputTestDataVectorYValue = "0";
+            this.InputTestDataDataPoints = "20";
+            this.InputTestDataBias = string.Empty;
 
             //Lean Input Values
-            this.InputInitVectorXValue = 0;
-            this.InputInitVectorYValue = 0;
-            this.InputInitBias = 0;
+            this.InputTrainDataVectorXValue = string.Empty;
+            this.InputTrainDataVectorYValue = string.Empty;
+            this.InputTrainDataLearningRate = "1";
+            this.InputTrainDataInitBias = string.Empty;
 
 
             generator = GenerateData();
@@ -160,6 +165,7 @@ namespace percsharp.ui
         {            
             generator = GenerateData();
             PlotState(generator);
+            Console.WriteLine($"Test dataset generated with weight: {generator.InitVector} and bias: {generator.InitBias}");
             if (nn != null) nn.Reset();
         }        
 
@@ -174,7 +180,32 @@ namespace percsharp.ui
         public DataGeneratorLinearSeparable GenerateData()
         {
             nn = null;
-            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { this.InputVectorXValue, this.InputVectorYValue }), this.InputDeviation, 100, 2);
+
+            if (!decimal.TryParse(InputTestDataVectorXValue, out decimal rx))
+            {
+                rx = 1;
+                InputTestDataVectorXValue = "1";
+            }
+
+            if (!decimal.TryParse(InputTestDataVectorYValue, out decimal ry))
+            {
+                ry = 1;
+                InputTestDataVectorYValue = "0";
+            }
+
+            if (!int.TryParse(InputTestDataDataPoints, out int points))
+            {
+                points = 100;
+                InputTestDataDataPoints = "100";
+            }
+
+            if (!decimal.TryParse(InputTestDataBias, out decimal bias))
+            {
+                bias = 0;
+                InputTestDataBias = "0";
+            }
+
+            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { rx, ry }), bias, points, 2);
             generator.run();
 
             return generator;
@@ -242,12 +273,45 @@ namespace percsharp.ui
         private void InitPerceptron()
         {
             Random rnd = new Random();
-            decimal rx = InputInitVectorXValue != 0 ? InputInitVectorXValue : (decimal)rnd.Next(-10, 10) / 10;
-            decimal ry = InputInitVectorYValue != 0 ? InputInitVectorYValue : (decimal)rnd.Next(-10, 10) / 10;
-            decimal learnRate = InputLearningRate;
-            decimal[] initWeight = new decimal[] { rx, ry };
-            decimal initBias = 0;// (decimal)rnd.Next(-10, 10) / 10;
 
+            decimal rx;
+            if(!decimal.TryParse(InputTestDataVectorXValue, out rx))
+            {
+                InputTestDataVectorXValue = "1";
+                rx = 1;
+            }
+            else
+            {
+                rx = (decimal)rnd.Next(-10, 10) / 10;
+            }
+
+            decimal ry;
+            if(!decimal.TryParse(InputTestDataVectorYValue, out ry))
+            {
+                InputTestDataVectorYValue = "0";
+                ry = 0;
+            }
+            else
+            {
+                ry = (decimal)rnd.Next(-10, 10) / 10;
+            }
+
+
+            decimal learnRate;
+            if(!decimal.TryParse(InputTrainDataLearningRate, out learnRate))
+            {
+                InputTrainDataLearningRate = "1";
+                learnRate = 1;
+            }
+
+            decimal initBias;
+            if(!decimal.TryParse(InputTrainDataInitBias, out initBias))
+            {
+                InputTrainDataInitBias = "0";
+                initBias = 0;
+            }
+
+            decimal[] initWeight = new decimal[] { rx, ry };           
             nn = new NeuralNetworkPerceptron(initWeight, initBias, learnRate);
 
             Console.WriteLine($"NeuralNetworkPerceptron initialized with init weight: {nn.InitWeight} and bias {nn.InitBias}");
