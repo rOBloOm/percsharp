@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bloom.Percsharp.Domain
 {
-    public enum NeuralNetworkTrainerState
+    public enum PerceptronTrainerState
     {
         None,
         Initialized,

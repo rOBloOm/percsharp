@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Bloom.Percsharp.Domain
 {
-    public class NeuralNetworkPerceptron
+    public class PerceptronTrainer
     {
         private static decimal[] DefaultInitWeight = new decimal[] { 0, 0 };
         private static decimal DefaultInitBias = 0;
         private static decimal DefaultLearningRate = 1;
         
         private Perceptron perceptron;
-        public NeuralNetworkTrainerState State { get; private set; }
+        public PerceptronTrainerState State { get; private set; }
         public int Runs = 0;
         public int MaxRuns = 1000;
         public int Errors = 0;
@@ -32,11 +32,11 @@ namespace Bloom.Percsharp.Domain
 
         private int CurrentTrainStep = 0;
 
-        public NeuralNetworkPerceptron() :this(DefaultInitWeight, DefaultInitBias, DefaultLearningRate)
+        public PerceptronTrainer() :this(DefaultInitWeight, DefaultInitBias, DefaultLearningRate)
         {
         }
 
-        public NeuralNetworkPerceptron(decimal[] initWeiht, decimal initBias, decimal learningRate)
+        public PerceptronTrainer(decimal[] initWeiht, decimal initBias, decimal learningRate)
         {
             this.Init(initWeiht, initBias, learningRate);
         }     
@@ -49,7 +49,7 @@ namespace Bloom.Percsharp.Domain
             this.LearningRate = learningRate;
             this.perceptron = new Perceptron(new Vector(initWeight), initBias, learningRate);
 
-            State = NeuralNetworkTrainerState.Initialized;
+            State = PerceptronTrainerState.Initialized;
         }
 
         public void Reset()
@@ -65,7 +65,7 @@ namespace Bloom.Percsharp.Domain
         /// <returns>true after convergence</returns>
         public bool TrainRun(List<Vector> positives, List<Vector> negatives)
         {
-            this.State = NeuralNetworkTrainerState.Training;
+            this.State = PerceptronTrainerState.Training;
 
             this.Convergence = false;
             
@@ -77,7 +77,7 @@ namespace Bloom.Percsharp.Domain
                 }
             }
 
-            this.State = NeuralNetworkTrainerState.Finished;
+            this.State = PerceptronTrainerState.Finished;
 
             return this.Convergence;
         }

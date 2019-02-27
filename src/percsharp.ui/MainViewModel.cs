@@ -12,10 +12,10 @@ namespace Bloom.Percsharp.Ui
     public class MainViewModel : INotifyPropertyChanged
     {
         public PlotModel PlotModelGeneratedData { get; set; }
-        private MainWindow window;
+        private MainWindow Window;
 
-        private DataGeneratorLinearSeparable generator;
-        NeuralNetworkPerceptron nn;
+        private DataGeneratorLinearSeparable DataGenerator;
+        PerceptronTrainer PerceptronTrainer;
 
         public string InputTestDataVectorXValue { get; set; }
         public string InputTestDataVectorYValue { get; set; }
@@ -146,7 +146,7 @@ namespace Bloom.Percsharp.Ui
 
         public MainViewModel(MainWindow window)
         {
-            this.window = window;
+            this.Window = window;
 
             //Generator Input Values
             this.InputTestDataVectorXValue = "1";
@@ -161,34 +161,34 @@ namespace Bloom.Percsharp.Ui
             this.InputTrainDataInitBias = string.Empty;
 
 
-            generator = GenerateData();
-            PlotState(generator);
+            DataGenerator = GenerateData();
+            PlotState(DataGenerator);
         }               
 
         public void GenerateClicked()
         {            
-            generator = GenerateData();
-            PlotState(generator);
-            Console.WriteLine($"Test dataset generated with weight: {generator.InitVector} and bias: {generator.InitBias}");
-            if (nn != null) nn.Reset();
+            DataGenerator = GenerateData();
+            PlotState(DataGenerator);
+            Console.WriteLine($"Test dataset generated with weight: {DataGenerator.InitVector} and bias: {DataGenerator.InitBias}");
+            if (PerceptronTrainer != null) PerceptronTrainer.Reset();
         }   
         
         public void InitTrainer()
         {
             InitPerceptron();
+            PlotInitState();
         }
 
         public void TrainPerceptronClick()
         {
             InitPerceptron();
             bool successful = TrainPerceptron();
-            if (successful) PlotState(generator);
-
+            if (successful) PlotState(DataGenerator);
         }
 
         public DataGeneratorLinearSeparable GenerateData()
         {
-            nn = null;
+            PerceptronTrainer = null;
 
             if (!decimal.TryParse(InputTestDataVectorXValue, out decimal rx))
             {
@@ -218,6 +218,63 @@ namespace Bloom.Percsharp.Ui
             generator.run();
 
             return generator;
+        }
+
+        private void PlotInitState()
+        {
+            if (PlotModelGeneratedData != null)
+                PlotModelGeneratedData.InvalidatePlot(false);
+
+            PlotModelGeneratedData = new PlotModel() { Title = "PerceptronTrainingVisualizer" };
+
+            //Positive Points from test data
+            ScatterSeries scatterSeriesPostitive = new ScatterSeries() { MarkerType = MarkerType.Circle, MarkerFill = OxyColors.Blue, MarkerSize = 3 };
+            DataGenerator.Positives.ForEach(p =>
+            {
+                var point = new ScatterPoint((double)p[0], (double)p[1]);
+                scatterSeriesPostitive.Points.Add(point);
+            });
+
+            PlotModelGeneratedData.Series.Add(scatterSeriesPostitive);
+
+            //Negative Points from test data
+            ScatterSeries scatterSeriesNegative = new ScatterSeries() { MarkerType = MarkerType.Circle, MarkerFill = OxyColors.Red, MarkerSize = 3 };
+            DataGenerator.Negatives.ForEach(n =>
+            {
+                scatterSeriesNegative.Points.Add(new ScatterPoint((double)n[0], (double)n[1]));
+            });
+
+            PlotModelGeneratedData.Series.Add(scatterSeriesNegative);
+
+            //Initialization Vector from test data
+            LineSeries initVectorSeries = new LineSeries() { Color = OxyColors.Black };
+            initVectorSeries.Points.Add(new DataPoint(0, 0));
+            initVectorSeries.Points.Add(new DataPoint((double)DataGenerator.InitVector[0], (double)DataGenerator.InitVector[1]));
+
+            PlotModelGeneratedData.Series.Add(initVectorSeries);
+
+            //Perceptron initial weight
+            LineSeries initialWeightSeries = new LineSeries() { Color = OxyColors.Purple };
+            initialWeightSeries.Points.Add(new DataPoint(0, 0));
+            initialWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.InitWeight[0], (double)PerceptronTrainer.InitWeight[1]));
+
+            PlotModelGeneratedData.Series.Add(initialWeightSeries);
+            //Perceptron learned weight
+            LineSeries learnedWeightSeries = new LineSeries() { Color = OxyColors.Green };
+            learnedWeightSeries.Points.Add(new DataPoint(0, 0));
+            learnedWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.CurrentWeight[0], (double)PerceptronTrainer.CurrentWeight[1]));
+
+            PlotModelGeneratedData.Series.Add(learnedWeightSeries);
+
+            //Axis
+            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Bottom, AxislineStyle = LineStyle.Solid });
+            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Left, AxislineStyle = LineStyle.Solid });
+
+            //Plot
+            OxyPlot.Wpf.PlotView plotView = Window.PlotGeneratedData;
+            plotView.Model = PlotModelGeneratedData;
+            plotView.InvalidatePlot(true);
+            plotView.InvalidateVisual();
         }
 
         private void PlotState(DataGeneratorLinearSeparable generator)
@@ -254,17 +311,18 @@ namespace Bloom.Percsharp.Ui
             PlotModelGeneratedData.Series.Add(initVectorSeries);
 
             
-            if(nn != null)
-            {   //Perceptron initial weight
+            if(PerceptronTrainer != null)
+            {   
+                //Perceptron initial weight
                 LineSeries initialWeightSeries = new LineSeries() { Color = OxyColors.Purple };
                 initialWeightSeries.Points.Add(new DataPoint(0, 0));
-                initialWeightSeries.Points.Add(new DataPoint((double)nn.InitWeight[0], (double)nn.InitWeight[1]));
+                initialWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.InitWeight[0], (double)PerceptronTrainer.InitWeight[1]));
 
                 PlotModelGeneratedData.Series.Add(initialWeightSeries);
                 //Perceptron learned weight
                 LineSeries learnedWeightSeries = new LineSeries() { Color = OxyColors.Green };
                 learnedWeightSeries.Points.Add(new DataPoint(0, 0));
-                learnedWeightSeries.Points.Add(new DataPoint((double)nn.CurrentWeight[0], (double)nn.CurrentWeight[1]));
+                learnedWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.CurrentWeight[0], (double)PerceptronTrainer.CurrentWeight[1]));
 
                 PlotModelGeneratedData.Series.Add(learnedWeightSeries);
             }
@@ -274,7 +332,7 @@ namespace Bloom.Percsharp.Ui
             PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Left, AxislineStyle = LineStyle.Solid });
 
             //Plot
-            OxyPlot.Wpf.PlotView plotView = window.PlotGeneratedData;
+            OxyPlot.Wpf.PlotView plotView = Window.PlotGeneratedData;
             plotView.Model = PlotModelGeneratedData;
             plotView.InvalidatePlot(true);
             plotView.InvalidateVisual();
@@ -322,21 +380,21 @@ namespace Bloom.Percsharp.Ui
             }
 
             decimal[] initWeight = new decimal[] { rx, ry };           
-            nn = new NeuralNetworkPerceptron(initWeight, initBias, learnRate);
+            PerceptronTrainer = new PerceptronTrainer(initWeight, initBias, learnRate);
 
-            Console.WriteLine($"NeuralNetworkPerceptron initialized with init weight: {nn.InitWeight} and bias {nn.InitBias}");
+            Console.WriteLine($"NeuralNetworkPerceptron initialized with init weight: {PerceptronTrainer.InitWeight} and bias {PerceptronTrainer.InitBias}");
         }
 
         private bool TrainPerceptron()
         {
-            bool converged = nn.TrainRun(generator.Positives, generator.Negatives);
+            bool converged = PerceptronTrainer.TrainRun(DataGenerator.Positives, DataGenerator.Negatives);
 
-            ResultRuns = "Runs: \t\t" + nn.Runs.ToString() + "\t";
-            ResultLearningRate = "Learning Rate: \t" + nn.LearningRate;
-            ResultInitWeight = "Init Weight: \t" + nn.InitWeight.ToString() + "\t";
-            ResultInitBias = "Init Bias: \t" + nn.InitBias;
-            ResultResultWeight = "Result Weight: \t" + nn.CurrentWeight.ToString() + "\t";
-            ResultResultBias = "Result Bias: \t" + nn.CurrentBias;
+            ResultRuns = "Runs: \t\t" + PerceptronTrainer.Runs.ToString() + "\t";
+            ResultLearningRate = "Learning Rate: \t" + PerceptronTrainer.LearningRate;
+            ResultInitWeight = "Init Weight: \t" + PerceptronTrainer.InitWeight.ToString() + "\t";
+            ResultInitBias = "Init Bias: \t" + PerceptronTrainer.InitBias;
+            ResultResultWeight = "Result Weight: \t" + PerceptronTrainer.CurrentWeight.ToString() + "\t";
+            ResultResultBias = "Result Bias: \t" + PerceptronTrainer.CurrentBias;
 
             if (!converged)
             {

@@ -44,8 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataGeneratorLinearSeparable.cs" />
-    <Compile Include="NeuralNetworkPerceptron.cs" />
-    <Compile Include="NeuralNetworkState.cs" />
+    <Compile Include="PerceptronTrainer.cs" />
+    <Compile Include="PerceptronTrainerState.cs" />
     <Compile Include="Perceptron.cs" />
     <Compile Include="SonarDataTrainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
