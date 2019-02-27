@@ -1,7 +1,7 @@
-﻿<Application x:Class="percsharp.ui.App"
+﻿<Application x:Class="Bloom.Percsharp.Ui.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:percsharp.ui"
+             xmlns:local="clr-namespace:Bloom.Percsharp.Ui"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

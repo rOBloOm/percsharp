@@ -1,11 +1,7 @@
-﻿using percsharp.domain;
+﻿using Bloom.Percsharp.Domain;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace percsharp
+namespace Bloom.Percsharp
 {
     class Program
     {

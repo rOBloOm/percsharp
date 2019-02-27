@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace percsharp.res
+namespace Bloom.Percsharp.Resources
 {
     public static class SonarData
     {

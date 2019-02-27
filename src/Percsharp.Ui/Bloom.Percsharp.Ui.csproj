@@ -6,14 +6,16 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{57977786-83CF-4174-98B6-7E8A028EEE48}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>percsharp.ui</RootNamespace>
-    <AssemblyName>percsharp.ui</AssemblyName>
+    <RootNamespace>Bloom.Percsharp.Ui</RootNamespace>
+    <AssemblyName>Bloom.Percsharp.Ui</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -104,9 +106,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\perc-sharp.domain\percsharp.domain.csproj">
+    <ProjectReference Include="..\Percsharp.Domain\Bloom.Percsharp.Domain.csproj">
       <Project>{44e23454-6986-432e-aa61-562df32cf66e}</Project>
-      <Name>percsharp.domain</Name>
+      <Name>Bloom.Percsharp.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Percsharp.Resources\Bloom.Percsharp.Resources.csproj">
+      <Project>{730c4f3a-3bab-4b13-8153-74e54f2ec122}</Project>
+      <Name>Bloom.Percsharp.Resources</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

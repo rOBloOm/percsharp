@@ -1,17 +1,13 @@
-﻿using OxyPlot;
+﻿using Bloom.Percsharp.Domain;
+using Bloom.Percsharp.Ui.Infrastructure;
+using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
-using percsharp.domain;
-using percsharp.ui.Infrastrucutre;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace percsharp.ui
+namespace Bloom.Percsharp.Ui
 {
     public class MainViewModel : INotifyPropertyChanged
     {
@@ -128,8 +124,16 @@ namespace percsharp.ui
             }
         }
 
-        private ICommand _trainCommand;
+        private ICommand _initCommand;
+        public ICommand InitCommand
+        {
+            get
+            {
+                return _initCommand ?? (_initCommand = new CommandHandler(() => InitTrainer(), true));
+            }
+        }
 
+        private ICommand _trainCommand;
         public ICommand TrainCommand
         {
             get
@@ -167,7 +171,12 @@ namespace percsharp.ui
             PlotState(generator);
             Console.WriteLine($"Test dataset generated with weight: {generator.InitVector} and bias: {generator.InitBias}");
             if (nn != null) nn.Reset();
-        }        
+        }   
+        
+        public void InitTrainer()
+        {
+            InitPerceptron();
+        }
 
         public void TrainPerceptronClick()
         {
@@ -210,6 +219,7 @@ namespace percsharp.ui
 
             return generator;
         }
+
         private void PlotState(DataGeneratorLinearSeparable generator)
         {
             if (PlotModelGeneratedData != null)

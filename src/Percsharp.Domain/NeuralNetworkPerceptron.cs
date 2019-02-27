@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace percsharp.domain
+namespace Bloom.Percsharp.Domain
 {
     public class NeuralNetworkPerceptron
     {
         private static decimal[] DefaultInitWeight = new decimal[] { 0, 0 };
         private static decimal DefaultInitBias = 0;
         private static decimal DefaultLearningRate = 1;
-
+        
         private Perceptron perceptron;
-
+        public NeuralNetworkTrainerState State { get; private set; }
         public int Runs = 0;
         public int MaxRuns = 1000;
         public int Errors = 0;
@@ -38,21 +38,23 @@ namespace percsharp.domain
 
         public NeuralNetworkPerceptron(decimal[] initWeiht, decimal initBias, decimal learningRate)
         {
-            this.initWeight = initWeiht;
+            this.Init(initWeiht, initBias, learningRate);
+        }     
+
+        public void Init(decimal[] initWeight, decimal initBias, decimal learningRate)
+        {
+            this.Runs = 0;
+            this.initWeight = initWeight;
             this.initBias = initBias;
             this.LearningRate = learningRate;
+            this.perceptron = new Perceptron(new Vector(initWeight), initBias, learningRate);
 
-            perceptron = new Perceptron(new Vector(initWeiht), initBias, learningRate);
+            State = NeuralNetworkTrainerState.Initialized;
         }
 
         public void Reset()
         {
-            Reset(DefaultInitWeight, DefaultInitBias);
-        }
-
-        public void Reset(decimal[] initWeights, decimal initBias)
-        {
-            Runs = 0;
+            Init(DefaultInitWeight, DefaultInitBias, DefaultLearningRate);
         }
 
         /// <summary>
@@ -63,7 +65,9 @@ namespace percsharp.domain
         /// <returns>true after convergence</returns>
         public bool TrainRun(List<Vector> positives, List<Vector> negatives)
         {
-            Convergence = false;
+            this.State = NeuralNetworkTrainerState.Training;
+
+            this.Convergence = false;
             
             while (!TrainPass(positives, negatives))
             {
@@ -73,7 +77,9 @@ namespace percsharp.domain
                 }
             }
 
-            return Convergence;
+            this.State = NeuralNetworkTrainerState.Finished;
+
+            return this.Convergence;
         }
 
         /// <summary>

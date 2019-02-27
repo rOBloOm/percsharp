@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace percsharp.domain
+namespace Bloom.Percsharp.Domain
 {
     public class Perceptron
     {
@@ -18,7 +18,7 @@ namespace percsharp.domain
         public Perceptron(Vector initWeights, decimal initBias, decimal learningRate)
         {
             this.initialWeight = initWeights;
-            this.initialBias = initialBias;
+            this.initialBias = initBias;
             this.w = initWeights;
             this.b = initBias;
 

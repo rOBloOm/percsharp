@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace percsharp.ui
+namespace Bloom.Percsharp.Ui
 {
     /// <summary>
     /// Interaction logic for App.xaml

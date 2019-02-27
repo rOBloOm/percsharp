@@ -4,17 +4,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E1331F8E-B0CB-4C16-842C-DFF4377C961A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>percsharp</RootNamespace>
-    <AssemblyName>percsharp</AssemblyName>
+    <ProjectGuid>{44E23454-6986-432E-AA61-562DF32CF66E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Bloom.Percsharp.Domain</RootNamespace>
+    <AssemblyName>Bloom.Percsharp.Domain</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +25,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,21 +43,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="DataGeneratorLinearSeparable.cs" />
+    <Compile Include="NeuralNetworkPerceptron.cs" />
+    <Compile Include="NeuralNetworkState.cs" />
+    <Compile Include="Perceptron.cs" />
+    <Compile Include="SonarDataTrainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\perc-sharp.domain\percsharp.domain.csproj">
-      <Project>{44e23454-6986-432e-aa61-562df32cf66e}</Project>
-      <Name>percsharp.domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\percsharp.res\percsharp.res.csproj">
-      <Project>{730c4f3a-3bab-4b13-8153-74e54f2ec122}</Project>
-      <Name>percsharp.res</Name>
-    </ProjectReference>
+    <Compile Include="Vector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
