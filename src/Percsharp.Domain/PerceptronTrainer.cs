@@ -98,11 +98,11 @@ namespace Bloom.Percsharp.Domain
 
             if (Errors <= 0)
             {
+                State = PerceptronTrainerState.Finished;
                 Convergence = true;
                 return true;
             }
 
-            Console.WriteLine($"Run: {Runs}, Errors: {Errors}, Weight: {perceptron.W}");
             return false;
         }
 
