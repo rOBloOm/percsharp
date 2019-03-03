@@ -151,6 +151,15 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
+        private ICommand _trainStepCommand;
+        public ICommand TrainStepCommand
+        {
+            get
+            {
+                return _trainStepCommand ?? (_trainStepCommand = new CommandHandler(() => TrainStep(), true));
+            }
+        }
+
         #endregion Properties Command
 
         public MainViewModel(MainWindow window)
@@ -349,6 +358,17 @@ namespace Bloom.Percsharp.Ui
             plotView.InvalidateVisual();
         }        
 
+        private void PlotPrediction(bool error, Vector v)
+        {
+            if(!error)
+            {
+                ScatterSeries scatterSeriesPositivePrediction = new ScatterSeries() { MarkerType = MarkerType.Cross, MarkerFill = OxyColors.Green, MarkerSize = 5 };
+                var point = new ScatterPoint((double)v[0], (double)v[1]);
+                scatterSeriesPositivePrediction.Points.Add(point);
+                PlotModelGeneratedData.Series.Add(scatterSeriesPositivePrediction);
+            }
+        }
+
         private void InitPerceptron()
         {
             Random rnd = new Random();
@@ -394,6 +414,31 @@ namespace Bloom.Percsharp.Ui
             PerceptronTrainer = new PerceptronTrainer(initWeight, initBias, learnRate);
 
             Log($"Trainer initialized: weight: {PerceptronTrainer.InitWeight} bias {PerceptronTrainer.InitBias}");
+        }
+
+        private void TrainStep()
+        {
+            if(PerceptronTrainer == null)
+            {
+                InitTrainer();
+                return;
+            }
+
+            if(PerceptronTrainer.State != PerceptronTrainerState.Initialized && PerceptronTrainer.State != PerceptronTrainerState.Training)
+            {
+                Log("Wrong PerceptronTrainerState: " + PerceptronTrainer.State);
+                return;
+            }
+
+            PerceptronTrainer.TrainStep(DataGenerator.Positives, DataGenerator.Negatives);
+            PlotState();
+            PrintState();
+
+            Log("Trained Step");
+
+            bool error = PerceptronTrainer.TrainStepPredict(DataGenerator.Positives, DataGenerator.Negatives);
+            Vector v = PerceptronTrainer.TrainStepCurrent(DataGenerator.Positives, DataGenerator.Negatives);
+            PlotPrediction(error, v);            
         }
 
         private void TrainPass()

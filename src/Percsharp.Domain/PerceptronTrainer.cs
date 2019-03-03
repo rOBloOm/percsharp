@@ -21,16 +21,15 @@ namespace Bloom.Percsharp.Domain
 
         private decimal initBias;
         public decimal InitBias => initBias;
-
-        private Vector initWeight;
-        public Vector InitWeight => initWeight;
+        public Vector InitWeight { get; private set; }
 
         public decimal CurrentBias => perceptron.Bias;
         public Vector CurrentWeight => perceptron.W;        
 
         public bool Convergence = false;
-
+        
         private int CurrentTrainStep = 0;
+        public bool IsNewPass => CurrentTrainStep == 0;
 
         public PerceptronTrainer() :this(DefaultInitWeight, DefaultInitBias, DefaultLearningRate)
         {
@@ -41,10 +40,12 @@ namespace Bloom.Percsharp.Domain
             this.Init(initWeiht, initBias, learningRate);
         }     
 
+        
+
         public void Init(decimal[] initWeight, decimal initBias, decimal learningRate)
         {
             this.Runs = 0;
-            this.initWeight = initWeight;
+            this.InitWeight = initWeight;
             this.initBias = initBias;
             this.LearningRate = learningRate;
             this.perceptron = new Perceptron(new Vector(initWeight), initBias, learningRate);
@@ -124,8 +125,74 @@ namespace Bloom.Percsharp.Domain
                     Errors++;
                 }
             }
+        }
 
-            CurrentTrainStep++;
+        public Vector TrainStepCurrent(List<Vector> positives, List<Vector> negatives)
+        {
+            if (CurrentTrainStep < positives.Count)
+            {
+                return positives[CurrentTrainStep];
+            }
+            else if ((CurrentTrainStep - positives.Count) < negatives.Count)
+            {
+                return negatives[CurrentTrainStep - positives.Count];
+            }
+
+            return null;
+        }
+
+        public bool TrainStepPredict(List<Vector> positives, List<Vector> negatives)
+        {           
+            Vector v;
+            if(CurrentTrainStep < positives.Count)
+            {
+                v = positives[CurrentTrainStep];
+                if((v * perceptron.W) <= 0)
+                {
+                    return false;
+                }
+            }
+            else if((CurrentTrainStep - positives.Count) < negatives.Count)
+            {
+                v = negatives[CurrentTrainStep - positives.Count];
+                if((v * perceptron.W) > 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void TrainStep(List<Vector> positives, List<Vector> negatives)
+        {
+            Vector v;
+            if (CurrentTrainStep < positives.Count)
+            {
+                v = positives[CurrentTrainStep];
+                if ((v * perceptron.W) <= 0)
+                {
+                    perceptron.W += LearningRate * v;
+                    Errors++;
+                }
+            }
+            else if ((CurrentTrainStep - positives.Count) < negatives.Count)
+            {
+                v = negatives[CurrentTrainStep - positives.Count];
+                if ((v * perceptron.W) > 0)
+                {
+                    perceptron.W -= LearningRate * v;
+                    Errors++;
+                }
+            }
+
+            if(CurrentTrainStep > positives.Count + negatives.Count)
+            {
+                CurrentTrainStep = 0;
+                if(Errors == 0)
+                {
+                    Convergence = true;
+                }
+            }
         }
     }
 }
