@@ -358,15 +358,81 @@ namespace Bloom.Percsharp.Ui
             plotView.InvalidateVisual();
         }        
 
-        private void PlotPrediction(bool error, Vector v)
+        private void PlotsStatePrediction(PerceptronTrainerStepPrediction prediction)
         {
-            if(!error)
+            if (PlotModelGeneratedData != null)
+                PlotModelGeneratedData.InvalidatePlot(false);
+
+            PlotModelGeneratedData = new PlotModel() { Title = "PerceptronTrainingVisualizer" };
+
+            //Positive Points from test data
+            ScatterSeries scatterSeriesPostitive = new ScatterSeries() { MarkerType = MarkerType.Circle, MarkerFill = OxyColors.Blue, MarkerSize = 3 };
+            DataGenerator.Positives.ForEach(p =>
             {
-                ScatterSeries scatterSeriesPositivePrediction = new ScatterSeries() { MarkerType = MarkerType.Cross, MarkerFill = OxyColors.Green, MarkerSize = 5 };
-                var point = new ScatterPoint((double)v[0], (double)v[1]);
+                var point = new ScatterPoint((double)p[0], (double)p[1]);
+                scatterSeriesPostitive.Points.Add(point);
+            });
+
+            PlotModelGeneratedData.Series.Add(scatterSeriesPostitive);
+
+            //Negative Points from test data
+            ScatterSeries scatterSeriesNegative = new ScatterSeries() { MarkerType = MarkerType.Circle, MarkerFill = OxyColors.Red, MarkerSize = 3 };
+            DataGenerator.Negatives.ForEach(n =>
+            {
+                scatterSeriesNegative.Points.Add(new ScatterPoint((double)n[0], (double)n[1]));
+            });
+
+            PlotModelGeneratedData.Series.Add(scatterSeriesNegative);
+
+            //Initialization Vector from test data
+            LineSeries initVectorSeries = new LineSeries() { Color = OxyColors.Black };
+            initVectorSeries.Points.Add(new DataPoint(0, 0));
+            initVectorSeries.Points.Add(new DataPoint((double)DataGenerator.InitVector[0], (double)DataGenerator.InitVector[1]));
+
+            PlotModelGeneratedData.Series.Add(initVectorSeries);
+
+
+            if (PerceptronTrainer != null)
+            {
+                //Perceptron initial weight
+                LineSeries initialWeightSeries = new LineSeries() { Color = OxyColors.Purple };
+                initialWeightSeries.Points.Add(new DataPoint(0, 0));
+                initialWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.InitWeight[0], (double)PerceptronTrainer.InitWeight[1]));
+
+                PlotModelGeneratedData.Series.Add(initialWeightSeries);
+                //Perceptron learned weight
+                LineSeries learnedWeightSeries = new LineSeries() { Color = OxyColors.Green };
+                learnedWeightSeries.Points.Add(new DataPoint(0, 0));
+                learnedWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.CurrentWeight[0], (double)PerceptronTrainer.CurrentWeight[1]));
+
+                PlotModelGeneratedData.Series.Add(learnedWeightSeries);
+            }
+
+            //Prediction
+            if (!prediction.Error)
+            {
+                ScatterSeries scatterSeriesPositivePrediction = new ScatterSeries() { MarkerType = MarkerType.Cross, MarkerFill = OxyColors.Orange, MarkerSize = 5 };
+                var point = new ScatterPoint((double)prediction.DataPoint[0], (double)prediction.DataPoint[1]);
                 scatterSeriesPositivePrediction.Points.Add(point);
                 PlotModelGeneratedData.Series.Add(scatterSeriesPositivePrediction);
             }
+            else
+            {
+                LineSeries lineSeriesCorrection = new LineSeries() { Color = OxyColors.Orange };
+                lineSeriesCorrection.Points.Add(new DataPoint((double)prediction.CurrentWeight[0], (double)prediction.CurrentWeight[1]));
+                lineSeriesCorrection.Points.Add(new DataPoint((double)prediction.ResultingWeight[0], (double)prediction.ResultingWeight[1]));
+                PlotModelGeneratedData.Series.Add(lineSeriesCorrection);
+            }
+
+            //Axis
+            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Bottom, AxislineStyle = LineStyle.Solid });
+            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Left, AxislineStyle = LineStyle.Solid });
+
+            //Plot
+            OxyPlot.Wpf.PlotView plotView = Window.PlotGeneratedData;
+            plotView.Model = PlotModelGeneratedData;
+            plotView.InvalidatePlot(true);
+            plotView.InvalidateVisual();            
         }
 
         private void InitPerceptron()
@@ -430,15 +496,22 @@ namespace Bloom.Percsharp.Ui
                 return;
             }
 
-            PerceptronTrainer.TrainStep(DataGenerator.Positives, DataGenerator.Negatives);
-            PlotState();
+            PerceptronTrainer.TrainStep(DataGenerator.Positives, DataGenerator.Negatives);           
+
+            PerceptronTrainerStepPrediction prediction = PerceptronTrainer.TrainStepPredict(DataGenerator.Positives, DataGenerator.Negatives);
+            Vector v = PerceptronTrainer.TrainStepCurrent(DataGenerator.Positives, DataGenerator.Negatives);                        
+
+            if(!prediction.Error)
+            {
+                Log($"TrainStep: Datapoint {v} is valid");
+            }
+            else
+            {
+                Log($"TrainStep: Datapoint {v} is invalid. Adjusting weight.");
+            }
+
+            PlotsStatePrediction(prediction);
             PrintState();
-
-            Log("Trained Step");
-
-            bool error = PerceptronTrainer.TrainStepPredict(DataGenerator.Positives, DataGenerator.Negatives);
-            Vector v = PerceptronTrainer.TrainStepCurrent(DataGenerator.Positives, DataGenerator.Negatives);
-            PlotPrediction(error, v);            
         }
 
         private void TrainPass()

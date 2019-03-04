@@ -141,26 +141,46 @@ namespace Bloom.Percsharp.Domain
             return null;
         }
 
-        public bool TrainStepPredict(List<Vector> positives, List<Vector> negatives)
-        {           
-            Vector v;
+        public PerceptronTrainerStepPrediction TrainStepPredict(List<Vector> positives, List<Vector> negatives)
+        {
+            PerceptronTrainerStepPrediction result = new PerceptronTrainerStepPrediction();
             if(CurrentTrainStep < positives.Count)
             {
-                v = positives[CurrentTrainStep];
-                if((v * perceptron.W) <= 0)
+                result.DataPoint = positives[CurrentTrainStep];
+                if((result.DataPoint * perceptron.W) <= 0)
                 {
-                    return false;
+                    result.Error = true;
+                    result.CurrentWeight = CurrentWeight;
+                    result.Correction = result.DataPoint * LearningRate;
+                    result.ResultingWeight = result.CurrentWeight + result.Correction;
+
+                    return result;
+                }
+                else
+                {
+                    result.Error = false;
+                    return result;
                 }
             }
             else if((CurrentTrainStep - positives.Count) < negatives.Count)
             {
-                v = negatives[CurrentTrainStep - positives.Count];
-                if((v * perceptron.W) > 0)
+                result.DataPoint = negatives[CurrentTrainStep - positives.Count];
+                if((result.DataPoint * perceptron.W) > 0)
                 {
-                    return false;
+                    result.Error = true;
+                    result.CurrentWeight = CurrentWeight;
+                    result.Correction = result.DataPoint * LearningRate * -1;
+                    result.ResultingWeight = result.CurrentWeight + result.Correction;
+                    return result;
+                }
+                else
+                {
+                    result.Error = false;
+                    return result;
                 }
             }
-            return true;
+
+            return null;
         }
 
         public void TrainStep(List<Vector> positives, List<Vector> negatives)
@@ -193,6 +213,10 @@ namespace Bloom.Percsharp.Domain
                     Convergence = true;
                 }
             }
+            else
+            {
+                CurrentTrainStep++;
+            }            
         }
     }
 }
