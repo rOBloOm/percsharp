@@ -191,7 +191,7 @@ namespace Bloom.Percsharp.Domain
                 }
             }
 
-            if(CurrentTrainStep > positives.Count + negatives.Count)
+            if(CurrentTrainStep >= positives.Count + negatives.Count)
             {
                 CurrentTrainStep = 0;
                 if(Errors == 0)
