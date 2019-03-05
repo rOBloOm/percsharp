@@ -120,7 +120,7 @@ namespace Bloom.Percsharp.Ui
         {
             get
             {
-                return _generateCommand ?? (_generateCommand = new CommandHandler(() => GenerateClicked(), true));
+                return _generateCommand ?? (_generateCommand = new CommandHandler(() => GenerateDataClick(), true));
             }
         }
 
@@ -129,7 +129,7 @@ namespace Bloom.Percsharp.Ui
         {
             get
             {
-                return _initCommand ?? (_initCommand = new CommandHandler(() => InitTrainer(), true));
+                return _initCommand ?? (_initCommand = new CommandHandler(() => InitTrainerClick(), true));
             }
         }
 
@@ -147,7 +147,7 @@ namespace Bloom.Percsharp.Ui
         {
             get
             {
-                return _trainPassCommand ?? (_trainPassCommand = new CommandHandler(() => TrainPass(), true));
+                return _trainPassCommand ?? (_trainPassCommand = new CommandHandler(() => TrainPassClick(), true));
             }
         }
 
@@ -156,7 +156,7 @@ namespace Bloom.Percsharp.Ui
         {
             get
             {
-                return _trainStepCommand ?? (_trainStepCommand = new CommandHandler(() => TrainStep(), true));
+                return _trainStepCommand ?? (_trainStepCommand = new CommandHandler(() => TrainStepClick(), true));
             }
         }
 
@@ -181,9 +181,11 @@ namespace Bloom.Percsharp.Ui
 
             DataGenerator = GenerateData();
             PlotState();
-        }               
+        }
 
-        public void GenerateClicked()
+        #region Click Handlers
+
+        public void GenerateDataClick()
         {            
             DataGenerator = GenerateData();
             PlotState();
@@ -191,12 +193,9 @@ namespace Bloom.Percsharp.Ui
             if (PerceptronTrainer != null) PerceptronTrainer.Reset();
         }   
         
-        public void InitTrainer()
+        public void InitTrainerClick()
         {
-            ClearLog();
-            InitPerceptron();
-            PlotInitState();
-            PrintState();
+            InitTrainer();
         }
 
         public void TrainPerceptronClick()
@@ -206,39 +205,67 @@ namespace Bloom.Percsharp.Ui
             if (successful) PlotState();
         }
 
-        public DataGeneratorLinearSeparable GenerateData()
+        private void TrainStepClick()
         {
-            PerceptronTrainer = null;
-
-            if (!decimal.TryParse(InputTestDataVectorXValue, out decimal rx))
+            if (PerceptronTrainer == null)
             {
-                rx = 1;
-                InputTestDataVectorXValue = "1";
+                InitTrainer();
+                PlotInitState();
+                PrintState();
+                return;
             }
 
-            if (!decimal.TryParse(InputTestDataVectorYValue, out decimal ry))
+            if (PerceptronTrainer.State != PerceptronTrainerState.Initialized && PerceptronTrainer.State != PerceptronTrainerState.Training)
             {
-                ry = 1;
-                InputTestDataVectorYValue = "0";
+                Log("Wrong PerceptronTrainerState: " + PerceptronTrainer.State);
+                return;
             }
 
-            if (!int.TryParse(InputTestDataDataPoints, out int points))
+            PerceptronTrainerStepPrediction prediction = PerceptronTrainer.TrainStepPredict(DataGenerator.Positives, DataGenerator.Negatives);
+            if (!prediction.Error)
             {
-                points = 100;
-                InputTestDataDataPoints = "100";
+                Log($"TrainStep: Datapoint {prediction.DataPoint} is valid");
+            }
+            else
+            {
+                Log($"TrainStep: Datapoint {prediction.DataPoint} is invalid. Adjusting weight.");
             }
 
-            if (!decimal.TryParse(InputTestDataBias, out decimal bias))
-            {
-                bias = 0;
-                InputTestDataBias = "0";
-            }
+            PlotStatePrediction(prediction);
+            PrintState();
 
-            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { rx, ry }), bias, points, 2);
-            generator.run();
-
-            return generator;
+            PerceptronTrainer.TrainStep(DataGenerator.Positives, DataGenerator.Negatives);
         }
+
+        private void TrainPassClick()
+        {
+            if (PerceptronTrainer == null)
+            {
+                InitTrainer();
+            }
+
+            if (PerceptronTrainer.State != PerceptronTrainerState.Initialized && PerceptronTrainer.State != PerceptronTrainerState.Training)
+            {
+                Log("Wrong PerceptronTrainerState: " + PerceptronTrainer.State);
+                return;
+            }
+
+            if (PerceptronTrainer.TrainPass(DataGenerator.Positives, DataGenerator.Negatives))
+            {
+                Log($"Pass {PerceptronTrainer.Runs}: Converged!");
+            }
+            else
+            {
+                Log($"Pass {PerceptronTrainer.Runs}: Errors: {PerceptronTrainer.Errors} Weights {PerceptronTrainer.CurrentWeight}");
+            }
+
+            PlotState();
+            PrintState();
+        }
+
+        #endregion Click Handlers
+        
+        #region Plot Data
 
         private void PlotInitState()
         {
@@ -358,7 +385,7 @@ namespace Bloom.Percsharp.Ui
             plotView.InvalidateVisual();
         }        
 
-        private void PlotsStatePrediction(PerceptronTrainerStepPrediction prediction)
+        private void PlotStatePrediction(PerceptronTrainerStepPrediction prediction)
         {
             if (PlotModelGeneratedData != null)
                 PlotModelGeneratedData.InvalidatePlot(false);
@@ -435,6 +462,62 @@ namespace Bloom.Percsharp.Ui
             plotView.InvalidateVisual();            
         }
 
+        private void PrintState()
+        {
+            ResultRuns = "Runs: \t\t" + PerceptronTrainer.Runs.ToString() + "\t";
+            ResultLearningRate = "Learning Rate: \t" + PerceptronTrainer.LearningRate;
+            ResultInitWeight = "Init Weight: \t" + PerceptronTrainer.InitWeight.ToString() + "\t";
+            ResultInitBias = "Init Bias: \t" + PerceptronTrainer.InitBias;
+            ResultResultWeight = "Result Weight: \t" + PerceptronTrainer.CurrentWeight.ToString() + "\t";
+            ResultResultBias = "Result Bias: \t" + PerceptronTrainer.CurrentBias;
+        }
+
+        #endregion Plot Data
+
+        public DataGeneratorLinearSeparable GenerateData()
+        {
+            PerceptronTrainer = null;
+
+            if (!decimal.TryParse(InputTestDataVectorXValue, out decimal rx))
+            {
+                rx = 1;
+                InputTestDataVectorXValue = "1";
+            }
+
+            if (!decimal.TryParse(InputTestDataVectorYValue, out decimal ry))
+            {
+                ry = 1;
+                InputTestDataVectorYValue = "0";
+            }
+
+            if (!int.TryParse(InputTestDataDataPoints, out int points))
+            {
+                points = 100;
+                InputTestDataDataPoints = "100";
+            }
+
+            if (!decimal.TryParse(InputTestDataBias, out decimal bias))
+            {
+                bias = 0;
+                InputTestDataBias = "0";
+            }
+
+            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { rx, ry }), bias, points, 2);
+            generator.run();
+
+            return generator;
+        }
+
+        #region Train Perceptron
+
+        public void InitTrainer()
+        {
+            ClearLog();
+            InitPerceptron();
+            PlotInitState();
+            PrintState();
+        }
+
         private void InitPerceptron()
         {
             Random rnd = new Random();
@@ -482,64 +565,6 @@ namespace Bloom.Percsharp.Ui
             Log($"Trainer initialized: weight: {PerceptronTrainer.InitWeight} bias {PerceptronTrainer.InitBias}");
         }
 
-        private void TrainStep()
-        {
-            if(PerceptronTrainer == null)
-            {
-                InitTrainer();
-                return;
-            }
-
-            if(PerceptronTrainer.State != PerceptronTrainerState.Initialized && PerceptronTrainer.State != PerceptronTrainerState.Training)
-            {
-                Log("Wrong PerceptronTrainerState: " + PerceptronTrainer.State);
-                return;
-            }
-
-            PerceptronTrainer.TrainStep(DataGenerator.Positives, DataGenerator.Negatives);           
-
-            PerceptronTrainerStepPrediction prediction = PerceptronTrainer.TrainStepPredict(DataGenerator.Positives, DataGenerator.Negatives);
-            Vector v = PerceptronTrainer.TrainStepCurrent(DataGenerator.Positives, DataGenerator.Negatives);                        
-
-            if(!prediction.Error)
-            {
-                Log($"TrainStep: Datapoint {v} is valid");
-            }
-            else
-            {
-                Log($"TrainStep: Datapoint {v} is invalid. Adjusting weight.");
-            }
-
-            PlotsStatePrediction(prediction);
-            PrintState();
-        }
-
-        private void TrainPass()
-        {
-            if(PerceptronTrainer == null)
-            {
-                InitTrainer();
-            }
-
-            if(PerceptronTrainer.State != PerceptronTrainerState.Initialized && PerceptronTrainer.State != PerceptronTrainerState.Training)
-            {
-                Log("Wrong PerceptronTrainerState: " + PerceptronTrainer.State);
-                return;
-            }
-
-            if(PerceptronTrainer.TrainPass(DataGenerator.Positives, DataGenerator.Negatives))
-            {
-                Log($"Pass {PerceptronTrainer.Runs}: Converged!");   
-            }
-            else
-            {
-                Log($"Pass {PerceptronTrainer.Runs}: Errors: {PerceptronTrainer.Errors} Weights {PerceptronTrainer.CurrentWeight}");
-            }
-
-            PlotState();
-            PrintState();
-        }
-
         private bool TrainPerceptron()
         {
             bool converged = PerceptronTrainer.TrainRun(DataGenerator.Positives, DataGenerator.Negatives);
@@ -557,15 +582,7 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
-        private void PrintState()
-        {
-            ResultRuns = "Runs: \t\t" + PerceptronTrainer.Runs.ToString() + "\t";
-            ResultLearningRate = "Learning Rate: \t" + PerceptronTrainer.LearningRate;
-            ResultInitWeight = "Init Weight: \t" + PerceptronTrainer.InitWeight.ToString() + "\t";
-            ResultInitBias = "Init Bias: \t" + PerceptronTrainer.InitBias;
-            ResultResultWeight = "Result Weight: \t" + PerceptronTrainer.CurrentWeight.ToString() + "\t";
-            ResultResultBias = "Result Bias: \t" + PerceptronTrainer.CurrentBias;
-        }
+        #endregion Train Perceptron
 
         #region Logging
 

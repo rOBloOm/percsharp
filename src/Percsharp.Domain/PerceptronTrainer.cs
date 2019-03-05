@@ -127,20 +127,6 @@ namespace Bloom.Percsharp.Domain
             }
         }
 
-        public Vector TrainStepCurrent(List<Vector> positives, List<Vector> negatives)
-        {
-            if (CurrentTrainStep < positives.Count)
-            {
-                return positives[CurrentTrainStep];
-            }
-            else if ((CurrentTrainStep - positives.Count) < negatives.Count)
-            {
-                return negatives[CurrentTrainStep - positives.Count];
-            }
-
-            return null;
-        }
-
         public PerceptronTrainerStepPrediction TrainStepPredict(List<Vector> positives, List<Vector> negatives)
         {
             PerceptronTrainerStepPrediction result = new PerceptronTrainerStepPrediction();
