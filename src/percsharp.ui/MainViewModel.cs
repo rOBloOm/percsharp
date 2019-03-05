@@ -160,6 +160,14 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
+        private ICommand _trainStepErrorCommand;
+        public ICommand TrainStepErrorCommand
+        {
+            get
+            {
+                return _trainStepErrorCommand ?? (_trainStepErrorCommand = new CommandHandler(() => TrainStepErrorClick(), true));
+            }
+        }
         #endregion Properties Command
 
         public MainViewModel(MainWindow window)
@@ -231,6 +239,45 @@ namespace Bloom.Percsharp.Ui
                 }
             }
         }        
+
+        private void TrainStepErrorClick()
+        {
+            if (PerceptronTrainer == null)
+            {
+                InitTrainer();
+                PlotInitState();
+                PrintState();
+                return;
+            }
+            else if (PerceptronTrainer.Convergence)
+            {
+                Log($"Converged!");
+                return;
+            }
+
+            while(TrainStep())
+            {
+                if (PerceptronTrainer.IsNewPass)
+                {
+                    Log($"Run {PerceptronTrainer.Runs} finished with {PerceptronTrainer.LastPassErrors} erros");
+                    if (PerceptronTrainer.Convergence)
+                    {
+                        Log($"Converged!");
+                        return;
+                    }
+                }
+            }
+
+            if (PerceptronTrainer.IsNewPass)
+            {
+                Log($"Run {PerceptronTrainer.Runs} finished with {PerceptronTrainer.LastPassErrors} erros");
+                if (PerceptronTrainer.Convergence)
+                {
+                    Log($"Converged!");
+                    return;
+                }
+            }
+        }
 
         private void TrainPassClick()
         {
@@ -577,12 +624,12 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
-        private void TrainStep()
+        private bool TrainStep()
         {
             if (PerceptronTrainer.State != PerceptronTrainerState.Initialized && PerceptronTrainer.State != PerceptronTrainerState.Training)
             {
                 Log("Wrong PerceptronTrainerState: " + PerceptronTrainer.State);
-                return;
+                return false;
             }
 
             PerceptronTrainerStepPrediction prediction = PerceptronTrainer.TrainStepPredict(DataGenerator.Positives, DataGenerator.Negatives);
@@ -599,6 +646,8 @@ namespace Bloom.Percsharp.Ui
             PrintState();
 
             PerceptronTrainer.TrainStep(DataGenerator.Positives, DataGenerator.Negatives);
+
+            return !prediction.Error;
         }
 
         #endregion Train Perceptron
