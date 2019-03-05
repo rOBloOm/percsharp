@@ -214,10 +214,6 @@ namespace Bloom.Percsharp.Ui
                 PrintState();
                 return;
             }
-            else if (PerceptronTrainer.IsNewPass && !PerceptronTrainer.Convergence)
-            {
-                Log($"Starting next Pass: {PerceptronTrainer.Runs}");
-            }
             else if (PerceptronTrainer.Convergence)
             {
                 Log($"Converged!");
@@ -225,6 +221,15 @@ namespace Bloom.Percsharp.Ui
             }
 
             TrainStep();
+
+            if (PerceptronTrainer.IsNewPass)
+            {
+                Log($"Run {PerceptronTrainer.Runs} finished with {PerceptronTrainer.LastPassErrors} erros");
+                if(PerceptronTrainer.Convergence)
+                {
+                    Log($"Converged!");
+                }
+            }
         }        
 
         private void TrainPassClick()

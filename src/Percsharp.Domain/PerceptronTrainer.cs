@@ -31,6 +31,8 @@ namespace Bloom.Percsharp.Domain
         private int CurrentTrainStep = 0;
         public bool IsNewPass => CurrentTrainStep == 0;
 
+        public int LastPassErrors { get; private set; }
+
         public PerceptronTrainer() :this(DefaultInitWeight, DefaultInitBias, DefaultLearningRate)
         {
         }
@@ -191,13 +193,19 @@ namespace Bloom.Percsharp.Domain
                 }
             }
 
-            if(CurrentTrainStep >= positives.Count + negatives.Count)
+            if(CurrentTrainStep >= positives.Count + negatives.Count - 1)
             {
                 CurrentTrainStep = 0;
-                if(Errors == 0)
+                LastPassErrors = Errors;
+                Runs++;
+                if (Errors == 0)
                 {
                     Convergence = true;
                 }
+                else
+                {                    
+                    Errors = 0;
+                }                
             }
             else
             {
