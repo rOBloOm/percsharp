@@ -7,7 +7,7 @@
     xmlns:oxy="http://oxyplot.org/wpf"        
     mc:Ignorable="d"
     Title="MainWindow"
-    Height="800"
+    Height="650"
     Width="1410"
     Background="#e5e5e5">
 
@@ -135,16 +135,7 @@
 
                 </Grid>
             </GroupBox>
-        </StackPanel>
-
-        <oxy:PlotView Grid.Column="1" Grid.Row="0" x:Name="PlotGeneratedData"
-                      VerticalAlignment="Top"
-                      Width="600" Height="600"
-                      Background="#e5e5e5">
-        </oxy:PlotView>
-
-        <StackPanel Grid.Row="0" Grid.Column="2" Margin="5, 50, 10, 20">
-            <GroupBox Header="Result" Margin="10">
+            <GroupBox Header="Result" Margin="10, 0, 10, 10">
                 <StackPanel  Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
                         <Label  x:Name="labelResultRuns" Content="{Binding ResultRuns}"></Label>
@@ -160,9 +151,19 @@
                             <Label FontWeight="Bold" Foreground="Green" x:Name="labelResultResultBias" Content="{Binding ResultResultBias}"></Label>
                         </StackPanel>
                     </StackPanel>
-                    <Label FontWeight="Bold">Training Log:</Label>
-                    <Label VerticalAlignment="Stretch" Content="{Binding LogText}"/>
                 </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
+        <oxy:PlotView Grid.Column="1" Grid.Row="0" x:Name="PlotGeneratedData"
+                      VerticalAlignment="Top"
+                      Width="600" Height="600"
+                      Background="#e5e5e5">
+        </oxy:PlotView>
+
+        <StackPanel Grid.Row="0" Grid.Column="2" Margin="5, 50, 10, 20">
+            <GroupBox Header="Log" Margin="10, 0, 10, 10" Height="540">
+                <Label VerticalAlignment="Stretch" Content="{Binding LogText}"/>
             </GroupBox>
         </StackPanel>
     </Grid>
