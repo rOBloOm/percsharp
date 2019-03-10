@@ -22,6 +22,8 @@ namespace Bloom.Percsharp.Domain
         public int Errors = 0;
         public decimal LearningRate;
 
+        public bool UseUnitVector { get; set; }
+
         public decimal InitBias { get; private set; }
         public Vector InitWeight { get; private set; }
 
@@ -57,6 +59,7 @@ namespace Bloom.Percsharp.Domain
             this.Perceptron = new Perceptron(new Vector(initWeight), initBias, learningRate);
             this.Positives = positives;
             this.Negatives = negatives;
+            this.UseUnitVector = false;
 
             State = PerceptronTrainerState.Initialized;
         }
@@ -91,6 +94,7 @@ namespace Bloom.Percsharp.Domain
         
         public bool TrainPass(List<Vector> positives, List<Vector> negatives)
         {
+            State = PerceptronTrainerState.Training;
             Runs++;
             Errors = 0;
 
@@ -109,7 +113,8 @@ namespace Bloom.Percsharp.Domain
 
         private void TrainPassStep(Vector v, bool expectPositive)
         {
-            if(expectPositive)
+            State = PerceptronTrainerState.Training;
+            if (expectPositive)
             {
                 if((v * Perceptron.W) <= 0)
                 {
@@ -125,10 +130,16 @@ namespace Bloom.Percsharp.Domain
                     Errors++;
                 }
             }
+
+            if(UseUnitVector)
+            {
+                Perceptron.W = Perceptron.W.UnitVector();
+            }
         }        
 
         public void TrainStep(List<Vector> positives, List<Vector> negatives)
         {
+            State = PerceptronTrainerState.Training;
             Vector v;
             if (CurrentTrainStep < positives.Count)
             {
@@ -149,13 +160,19 @@ namespace Bloom.Percsharp.Domain
                 }
             }
 
-            if(CurrentTrainStep >= positives.Count + negatives.Count - 1)
+            if (UseUnitVector)
             {
+                Perceptron.W = Perceptron.W.UnitVector();
+            }
+
+            if(CurrentTrainStep >= positives.Count + negatives.Count - 1)
+            {                
                 CurrentTrainStep = 0;
                 LastPassErrors = Errors;
                 Runs++;
                 if (Errors == 0)
                 {
+                    State = PerceptronTrainerState.Finished;
                     Convergence = true;
                 }
                 else
@@ -171,13 +188,15 @@ namespace Bloom.Percsharp.Domain
 
         private PerceptronTrainerStepPrediction TrainStepPredict()
         {
+            State = PerceptronTrainerState.Training;
             PerceptronTrainerStepPrediction result = new PerceptronTrainerStepPrediction();
             if (CurrentTrainStep < Positives.Count)
-            {
+            {                
                 result.DataPoint = Positives[CurrentTrainStep];
+                result.isPositiveDatapoint = true;
                 if ((result.DataPoint * this.Perceptron.W) <= 0)
                 {
-                    result.Error = true;
+                    result.Error = true;                    
                     result.CurrentWeight = CurrentWeight;
                     result.Correction = result.DataPoint * LearningRate;
                     result.ResultingWeight = result.CurrentWeight + result.Correction;
@@ -193,6 +212,7 @@ namespace Bloom.Percsharp.Domain
             else if ((CurrentTrainStep - Positives.Count) < Negatives.Count)
             {
                 result.DataPoint = Negatives[CurrentTrainStep - Positives.Count];
+                result.isPositiveDatapoint = false;
                 if ((result.DataPoint * Perceptron.W) > 0)
                 {
                     result.Error = true;

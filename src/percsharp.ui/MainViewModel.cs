@@ -5,6 +5,7 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 using System;
 using System.ComponentModel;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Bloom.Percsharp.Ui
@@ -29,6 +30,9 @@ namespace Bloom.Percsharp.Ui
 
         public string InputTrainDataLearningRate { get; set; }
         public string InputTrainDataInitBias { get; set; }        
+
+        public bool? AdaptLearningRate { get; set; }
+        public bool? UseUnitVector { get; set; }
 
         private string resultRuns;
         public string ResultRuns
@@ -186,6 +190,10 @@ namespace Bloom.Percsharp.Ui
             this.InputTrainDataLearningRate = "1";
             this.InputTrainDataInitBias = string.Empty;
 
+            //Option Default
+            this.UseUnitVector = false;
+            this.AdaptLearningRate = false;
+
 
             DataGenerator = GenerateData();
             PlotState();
@@ -325,8 +333,11 @@ namespace Bloom.Percsharp.Ui
 
             if (PerceptronTrainer != null)
             {
-                PlotInitWeight();
                 PlotLearnedWeight();
+                if (PerceptronTrainer.State == PerceptronTrainerState.Initialized)
+                {
+                    PlotInitWeight();
+                }
             }
 
             //Axis
@@ -396,14 +407,21 @@ namespace Bloom.Percsharp.Ui
         {
             PerceptronTrainerStepPrediction prediction = PerceptronTrainer.NextTrainStepPrediction;
 
-            ScatterSeries scatterSeriesPositivePrediction = new ScatterSeries() { MarkerType = MarkerType.Circle, MarkerFill = OxyColors.Orange, MarkerSize = 5 };
+            OxyColor color = prediction.isPositiveDatapoint ? OxyColors.Orange : OxyColors.DarkOrange;
+
+            ScatterSeries scatterSeriesPositivePrediction = new ScatterSeries() { MarkerType = MarkerType.Circle, MarkerFill = color, MarkerSize = 5 };
             var point = new ScatterPoint((double)prediction.DataPoint[0], (double)prediction.DataPoint[1]);
             scatterSeriesPositivePrediction.Points.Add(point);
             PlotModelGeneratedData.Series.Add(scatterSeriesPositivePrediction);
 
             if(prediction.Error)
-            {
-                LineSeries lineSeriesCorrection = new LineSeries() { Color = OxyColors.Orange };
+            {                
+                LineSeries lineSeriesCurrentVector = new LineSeries() { Color = color };
+                lineSeriesCurrentVector.Points.Add(new DataPoint(0, 0));
+                lineSeriesCurrentVector.Points.Add(new DataPoint((double)prediction.DataPoint[0], (double)prediction.DataPoint[1]));
+                PlotModelGeneratedData.Series.Add(lineSeriesCurrentVector);
+
+                LineSeries lineSeriesCorrection = new LineSeries() { Color = color };
                 lineSeriesCorrection.Points.Add(new DataPoint((double)prediction.CurrentWeight[0], (double)prediction.CurrentWeight[1]));
                 lineSeriesCorrection.Points.Add(new DataPoint((double)prediction.ResultingWeight[0], (double)prediction.ResultingWeight[1]));
                 PlotModelGeneratedData.Series.Add(lineSeriesCorrection);
@@ -511,6 +529,7 @@ namespace Bloom.Percsharp.Ui
 
             decimal[] initWeight = new decimal[] { rx, ry };           
             PerceptronTrainer = new PerceptronTrainer(initWeight, initBias, learnRate, DataGenerator.Positives, DataGenerator.Negatives);
+            PerceptronTrainer.UseUnitVector = UseUnitVector ?? false;
 
             Log($"Trainer initialized: weight: {PerceptronTrainer.InitWeight} bias {PerceptronTrainer.InitBias}");
         }

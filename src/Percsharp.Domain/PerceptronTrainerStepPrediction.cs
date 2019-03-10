@@ -9,6 +9,7 @@ namespace Bloom.Percsharp.Domain
     public class PerceptronTrainerStepPrediction
     {
         public bool Error;
+        public bool isPositiveDatapoint;
 
         public Vector DataPoint;
 

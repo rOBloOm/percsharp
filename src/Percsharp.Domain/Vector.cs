@@ -48,7 +48,7 @@ namespace Bloom.Percsharp.Domain
 
         public Vector UnitVector()
         {
-            return this * (1 / Magnitude);
+            return Magnitude != 0 ? this * (1 / Magnitude) : new Vector(new decimal[] { 0, 0 });
         }
 
         #region Vector Initialization
