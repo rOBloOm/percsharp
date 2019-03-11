@@ -3,10 +3,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:Bloom.Percsharp.Ui"
     xmlns:oxy="http://oxyplot.org/wpf"        
     mc:Ignorable="d"
-    Title="MainWindow"
+    Title="Training a Linear Separable Data Classifier"
     Height="650"
     Width="1410"
     Background="#e5e5e5">
@@ -113,7 +112,10 @@
                     <Label Grid.Column="3" Grid.Row="0" HorizontalAlignment="Right">Y:</Label>
                     <TextBox Grid.Column="4" Grid.Row="0" Text="{Binding InputTrainDataVectorYValue}"></TextBox>
 
-                    <Label Grid.Column="5" HorizontalAlignment="Right">Learning Rate</Label>
+                    <StackPanel Grid.Column="5" Orientation="Horizontal">
+                        <Button Command="{Binding RandomizeTrainingInputCommand}" Margin="5, 0, 0, 0">rnd</Button>
+                        <Label Margin="30, 0, 0, 0">Learning Rate:</Label>
+                    </StackPanel>
                     <TextBox Grid.Column="6" Grid.Row="0" HorizontalAlignment="left" Text="{Binding InputTrainDataLearningRate}"></TextBox>
 
                     <Label Grid.Column="0" Grid.Row="1">Init Bias</Label>

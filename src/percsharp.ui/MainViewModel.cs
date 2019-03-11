@@ -25,11 +25,49 @@ namespace Bloom.Percsharp.Ui
         public string InputTestDataDataPoints { get; set; }
         public string InputTestDataBias { get; set; }
 
-        public string InputTrainDataVectorXValue { get; set; }
-        public string InputTrainDataVectorYValue { get; set; }
+        private string inputTrainDataVectorXValue;
+        public string InputTrainDataVectorXValue
+        {
+            get => inputTrainDataVectorXValue;
+            set
+            {
+                inputTrainDataVectorXValue = value;
+                OnPropertyChanged(nameof(InputTrainDataVectorXValue));
+            }
+        }
 
-        public string InputTrainDataLearningRate { get; set; }
-        public string InputTrainDataInitBias { get; set; }        
+        private string inputTrainDataVectorYValue;
+        public string InputTrainDataVectorYValue
+        {
+            get => inputTrainDataVectorYValue;
+            set
+            {
+                inputTrainDataVectorYValue = value;
+                OnPropertyChanged(nameof(InputTrainDataVectorYValue));
+            }
+        }
+
+        private string inputTrainDataLearningRate;
+        public string InputTrainDataLearningRate
+        {
+            get => inputTrainDataLearningRate;
+            set
+            {
+                inputTrainDataLearningRate = value;
+                OnPropertyChanged(nameof(inputTrainDataLearningRate));
+            }
+        }
+
+        private string inputTrainDataInitBias;
+        public string InputTrainDataInitBias
+        {
+            get => inputTrainDataInitBias;
+            set
+            {
+                inputTrainDataInitBias = value;
+                OnPropertyChanged(nameof(inputTrainDataInitBias));
+            }
+        }
 
         public bool? AdaptLearningRate { get; set; }
         public bool? UseUnitVector { get; set; }
@@ -128,6 +166,15 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
+        private ICommand _randomizeTrainingInputCommand;
+        public ICommand RandomizeTrainingInputCommand
+        {
+            get
+            {
+                return _randomizeTrainingInputCommand ?? (_randomizeTrainingInputCommand = new CommandHandler(() => RandomizeTrainingInputClick(), true));
+            }
+        }
+
         private ICommand _initCommand;
         public ICommand InitCommand
         {
@@ -164,7 +211,7 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
-        private ICommand _trainStepErrorCommand;
+        private ICommand _trainStepErrorCommand;        
         public ICommand TrainStepErrorCommand
         {
             get
@@ -179,8 +226,8 @@ namespace Bloom.Percsharp.Ui
             this.Window = window;
 
             //Generator Input Values
-            this.InputTestDataVectorXValue = "1";
-            this.InputTestDataVectorYValue = "0";
+            this.InputTestDataVectorXValue = "0.7";
+            this.InputTestDataVectorYValue = "0.7";
             this.InputTestDataDataPoints = "20";
             this.InputTestDataBias = string.Empty;
 
@@ -202,13 +249,18 @@ namespace Bloom.Percsharp.Ui
         #region Click Handlers
 
         public void GenerateDataClick()
-        {            
+        {
             DataGenerator = GenerateData();
             PlotState();
             Log($"Test dataset generated with weight: {DataGenerator.InitVector} and bias: {DataGenerator.InitBias}");
             if (PerceptronTrainer != null) PerceptronTrainer.Reset();
-        }   
-        
+        }
+
+        public void RandomizeTrainingInputClick()
+        {
+            RandomizeTrainingInput();
+        }
+
         public void InitTrainerClick()
         {
             InitTrainer();
@@ -216,7 +268,7 @@ namespace Bloom.Percsharp.Ui
 
         public void TrainPerceptronClick()
         {
-            InitPerceptron();
+            InitPerceptrontTrainer();
             bool successful = TrainPerceptron();
             if (successful) PlotState();
         }
@@ -241,12 +293,12 @@ namespace Bloom.Percsharp.Ui
             if (PerceptronTrainer.IsNewPass)
             {
                 Log($"Run {PerceptronTrainer.Runs} finished with {PerceptronTrainer.LastPassErrors} erros");
-                if(PerceptronTrainer.Convergence)
+                if (PerceptronTrainer.Convergence)
                 {
                     Log($"Converged!");
                 }
             }
-        }        
+        }
 
         private void TrainStepErrorClick()
         {
@@ -263,7 +315,7 @@ namespace Bloom.Percsharp.Ui
                 return;
             }
 
-            while(TrainStep())
+            while (TrainStep())
             {
                 if (PerceptronTrainer.IsNewPass)
                 {
@@ -314,7 +366,7 @@ namespace Bloom.Percsharp.Ui
         }
 
         #endregion Click Handlers
-        
+
         #region Plot Data        
 
         private void PlotState()
@@ -341,8 +393,8 @@ namespace Bloom.Percsharp.Ui
             }
 
             //Axis
-            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Bottom, AxislineStyle = LineStyle.Solid });
-            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Left, AxislineStyle = LineStyle.Solid });
+            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Bottom, AxislineStyle = LineStyle.Solid, Minimum = -1.1, Maximum = 1.1 });
+            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Left, AxislineStyle = LineStyle.Solid, Minimum = -1.1, Maximum = 1.1 });
 
             //Plot
             OxyPlot.Wpf.PlotView plotView = Window.PlotGeneratedData;
@@ -395,6 +447,14 @@ namespace Bloom.Percsharp.Ui
             initVectorSeries.Points.Add(new DataPoint((double)DataGenerator.InitVector[0], (double)DataGenerator.InitVector[1]));
 
             PlotModelGeneratedData.Series.Add(initVectorSeries);
+
+            LineSeries initVectorSeparationLine = new LineSeries() { Color = OxyColors.LightGray };
+            Vector upperEnd = DataGenerator.InitVector.Rotate(0.5 * Math.PI).UnitVector();
+            Vector lowerEnd = DataGenerator.InitVector.Rotate(-0.5 * Math.PI).UnitVector();
+            initVectorSeparationLine.Points.Add(new DataPoint(lowerEnd[0], lowerEnd[1]));
+            initVectorSeparationLine.Points.Add(new DataPoint(upperEnd[0], upperEnd[1]));
+
+            PlotModelGeneratedData.Series.Add(initVectorSeparationLine);
         }
 
         private void PlotGeneratedDataPoints()
@@ -417,7 +477,7 @@ namespace Bloom.Percsharp.Ui
             });
 
             PlotModelGeneratedData.Series.Add(scatterSeriesNegative);
-        }       
+        }
 
         private void PlotAddPrediction()
         {
@@ -430,8 +490,8 @@ namespace Bloom.Percsharp.Ui
             scatterSeriesPositivePrediction.Points.Add(point);
             PlotModelGeneratedData.Series.Add(scatterSeriesPositivePrediction);
 
-            if(prediction.Error)
-            {                
+            if (prediction.Error)
+            {
                 LineSeries lineSeriesCurrentVector = new LineSeries() { Color = color };
                 lineSeriesCurrentVector.Points.Add(new DataPoint(0, 0));
                 lineSeriesCurrentVector.Points.Add(new DataPoint((double)prediction.DataPoint[0], (double)prediction.DataPoint[1]));
@@ -494,56 +554,60 @@ namespace Bloom.Percsharp.Ui
 
         #region Train Perceptron
 
+        public void RandomizeTrainingInput()
+        {
+            Random rnd = new Random();
+
+            double rx = (double)rnd.Next(-10, 10) / 10;
+            InputTrainDataVectorXValue = rx.ToString();
+
+            double ry = (double)rnd.Next(-10, 10) / 10;
+            InputTrainDataVectorYValue = ry.ToString();
+
+            InputTrainDataInitBias = "0";
+        }
+
         public void InitTrainer()
         {
             ClearLog();
-            InitPerceptron();
+            InitPerceptrontTrainer();
             PlotState();
             PrintState();
         }
 
-        private void InitPerceptron()
+        private void InitPerceptrontTrainer()
         {
             Random rnd = new Random();
 
             double rx;
-            if(!double.TryParse(InputTestDataVectorXValue, out rx))
-            {
-                InputTestDataVectorXValue = "1";
-                rx = 1;
-            }
-            else
+            if (!double.TryParse(InputTrainDataVectorXValue, out rx))
             {
                 rx = (double)rnd.Next(-10, 10) / 10;
+                InputTrainDataVectorXValue = rx.ToString();
             }
 
             double ry;
-            if(!double.TryParse(InputTestDataVectorYValue, out ry))
-            {
-                InputTestDataVectorYValue = "0";
-                ry = 0;
-            }
-            else
+            if (!double.TryParse(InputTrainDataVectorYValue, out ry))
             {
                 ry = (double)rnd.Next(-10, 10) / 10;
+                InputTrainDataVectorYValue = ry.ToString();
             }
 
-
             double learnRate;
-            if(!double.TryParse(InputTrainDataLearningRate, out learnRate))
+            if (!double.TryParse(InputTrainDataLearningRate, out learnRate))
             {
                 InputTrainDataLearningRate = "1";
                 learnRate = 1;
             }
 
             double initBias;
-            if(!double.TryParse(InputTrainDataInitBias, out initBias))
+            if (!double.TryParse(InputTrainDataInitBias, out initBias))
             {
                 InputTrainDataInitBias = "0";
                 initBias = 0;
             }
 
-            double[] initWeight = new double[] { rx, ry };           
+            double[] initWeight = new double[] { rx, ry };
             PerceptronTrainer = new PerceptronTrainer(initWeight, initBias, learnRate, DataGenerator.Positives, DataGenerator.Negatives);
             PerceptronTrainer.UseUnitVector = UseUnitVector ?? false;
 
@@ -608,7 +672,7 @@ namespace Bloom.Percsharp.Ui
             else
             {
                 LogText = logEntry + "\n" + LogText;
-            }    
+            }
         }
 
         private void ClearLog()
