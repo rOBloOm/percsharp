@@ -15,9 +15,9 @@ namespace Bloom.Percsharp.Domain
         private int dimension;
 
         private Vector initVector;
-        private decimal deviation;
+        private double deviation;
 
-        public DataGeneratorLinearSeparable(Vector initVector, decimal deviation, int size, int dimension)
+        public DataGeneratorLinearSeparable(Vector initVector, double deviation, int size, int dimension)
         {
             this.initVector = initVector;
             this.deviation = deviation;
@@ -29,7 +29,7 @@ namespace Bloom.Percsharp.Domain
         public int Dimension => dimension;
 
         public Vector InitVector => initVector;
-        public decimal InitBias => deviation;
+        public double InitBias => deviation;
 
         public List<Vector> Positives => postitives;
         public List<Vector> Negatives => negatives;
@@ -47,7 +47,7 @@ namespace Bloom.Percsharp.Domain
 
                 for(int d = 0; d < dimension; d++)
                 {
-                    data[d] = ((decimal)rnd.Next(-10, 10) / 10);
+                    data[d] = ((double)rnd.Next(-10, 10) / 10);
                 }
 
                 if(data * initVector + deviation > 0)

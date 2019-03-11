@@ -9,13 +9,13 @@ namespace Bloom.Percsharp.Domain
     public class Perceptron
     {
         private Vector initialWeight;
-        private decimal initialBias;
+        private double initialBias;
         private Vector w;
-        private decimal b;
-        private decimal r = 0.1M;
+        private double b;
+        private double r = 0.1;
 
 
-        public Perceptron(Vector initWeights, decimal initBias, decimal learningRate)
+        public Perceptron(Vector initWeights, double initBias, double learningRate)
         {
             this.initialWeight = initWeights;
             this.initialBias = initBias;
@@ -26,7 +26,7 @@ namespace Bloom.Percsharp.Domain
         }
 
         public Vector InitialWeight => initialWeight;
-        public decimal InitialBias => initialBias;
+        public double InitialBias => initialBias;
 
         public Vector W
         {
@@ -37,7 +37,7 @@ namespace Bloom.Percsharp.Domain
             }
         }
 
-        public decimal Bias
+        public double Bias
         {
             get => b;
             set

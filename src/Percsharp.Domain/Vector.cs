@@ -8,23 +8,23 @@ namespace Bloom.Percsharp.Domain
 {
     public class Vector
     {
-        private decimal[] vector;
+        private double[] vector;
 
         public Vector(int size)
         {
-            vector = new decimal[size];
+            vector = new double[size];
             for (int i = 0; i < size; i++)
             {
                 vector[i] = 0;
             }
         }
 
-        public Vector(decimal[] data)
+        public Vector(double[] data)
         {
             vector = data;
         }
 
-        public decimal this[int i]
+        public double this[int i]
         {
             get { return this.vector[i]; }
             set { this.vector[i] = value; }
@@ -32,7 +32,7 @@ namespace Bloom.Percsharp.Domain
 
         public int Size => this.vector.Length;
 
-        public decimal Magnitude
+        public double Magnitude
         {
             get
             {
@@ -42,18 +42,18 @@ namespace Bloom.Percsharp.Domain
                     sum += Math.Pow((double)vector[i], 2);
                 }
 
-                return (decimal)Math.Sqrt(sum);
+                return (double)Math.Sqrt(sum);
             }
         }
 
         public Vector UnitVector()
         {
-            return Magnitude != 0 ? this * (1 / Magnitude) : new Vector(new decimal[] { 0, 0 });
+            return Magnitude != 0 ? this * (1 / Magnitude) : new Vector(new double[] { 0, 0 });
         }
 
         #region Vector Initialization
 
-        public static implicit operator Vector(decimal[] value)
+        public static implicit operator Vector(double[] value)
         {
             if (value == null) return null;
 
@@ -104,12 +104,12 @@ namespace Bloom.Percsharp.Domain
 
         #region Vector Multiplication
 
-        public decimal DotProduct(Vector other)
+        public double DotProduct(Vector other)
         {
             if (this.Size != other.Size)
                 throw new Exception("Scalar product not supported when vectors are not the same size");
 
-            decimal sum = 0;
+            double sum = 0;
             for (int i = 0; i < Size; i++)
             {
                 sum += vector[i] * other[i];
@@ -118,12 +118,12 @@ namespace Bloom.Percsharp.Domain
             return sum;
         }
 
-        public static decimal operator *(Vector v1, Vector v2)
+        public static double operator *(Vector v1, Vector v2)
         {
             return v1.DotProduct(v2);
         }
 
-        public static Vector operator *(Vector v1, decimal scalar)
+        public static Vector operator *(Vector v1, double scalar)
         {
             Vector result = new Vector(v1.Size);
             for(int i = 0; i<v1.Size; i++)
@@ -134,12 +134,24 @@ namespace Bloom.Percsharp.Domain
             return result;
         }
 
-        public static Vector operator *(decimal scalar, Vector v1)
+        public static Vector operator *(double scalar, Vector v1)
         {
             return v1 * scalar;
         }
 
         #endregion Vector Multiplication
+
+        #region Vector Rotation
+
+        public Vector Rotate(double rad)
+        {
+            double[] result = new double[2];
+            result[0] = vector[0] * Math.Cos(rad) - vector[1] * Math.Sin(rad);
+            result[1] = vector[0] * Math.Sin(rad) + vector[1] * Math.Cos(rad);
+            return result;
+        }
+
+        #endregion Vector Rotation
 
         public override string ToString()
         {

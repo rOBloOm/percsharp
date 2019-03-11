@@ -28,10 +28,10 @@ namespace Bloom.Percsharp.Domain
 
             csvData.ForEach(dataset =>
             {
-                decimal[] data = new decimal[60];
+                double[] data = new double[60];
                 for(int i = 0; i < 60; i++)
                 {
-                    data[i] = decimal.Parse(dataset[i]);
+                    data[i] = double.Parse(dataset[i]);
                 }
 
                 sonarData.Add(new Vector(data));

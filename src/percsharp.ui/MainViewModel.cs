@@ -446,13 +446,13 @@ namespace Bloom.Percsharp.Ui
         {
             PerceptronTrainer = null;
 
-            if (!decimal.TryParse(InputTestDataVectorXValue, out decimal rx))
+            if (!double.TryParse(InputTestDataVectorXValue, out double rx))
             {
                 rx = 1;
                 InputTestDataVectorXValue = "1";
             }
 
-            if (!decimal.TryParse(InputTestDataVectorYValue, out decimal ry))
+            if (!double.TryParse(InputTestDataVectorYValue, out double ry))
             {
                 ry = 1;
                 InputTestDataVectorYValue = "0";
@@ -464,13 +464,13 @@ namespace Bloom.Percsharp.Ui
                 InputTestDataDataPoints = "100";
             }
 
-            if (!decimal.TryParse(InputTestDataBias, out decimal bias))
+            if (!double.TryParse(InputTestDataBias, out double bias))
             {
                 bias = 0;
                 InputTestDataBias = "0";
             }
 
-            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { rx, ry }), bias, points, 2);
+            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new double[] { rx, ry }), bias, points, 2);
             generator.run();
 
             return generator;
@@ -490,44 +490,44 @@ namespace Bloom.Percsharp.Ui
         {
             Random rnd = new Random();
 
-            decimal rx;
-            if(!decimal.TryParse(InputTestDataVectorXValue, out rx))
+            double rx;
+            if(!double.TryParse(InputTestDataVectorXValue, out rx))
             {
                 InputTestDataVectorXValue = "1";
                 rx = 1;
             }
             else
             {
-                rx = (decimal)rnd.Next(-10, 10) / 10;
+                rx = (double)rnd.Next(-10, 10) / 10;
             }
 
-            decimal ry;
-            if(!decimal.TryParse(InputTestDataVectorYValue, out ry))
+            double ry;
+            if(!double.TryParse(InputTestDataVectorYValue, out ry))
             {
                 InputTestDataVectorYValue = "0";
                 ry = 0;
             }
             else
             {
-                ry = (decimal)rnd.Next(-10, 10) / 10;
+                ry = (double)rnd.Next(-10, 10) / 10;
             }
 
 
-            decimal learnRate;
-            if(!decimal.TryParse(InputTrainDataLearningRate, out learnRate))
+            double learnRate;
+            if(!double.TryParse(InputTrainDataLearningRate, out learnRate))
             {
                 InputTrainDataLearningRate = "1";
                 learnRate = 1;
             }
 
-            decimal initBias;
-            if(!decimal.TryParse(InputTrainDataInitBias, out initBias))
+            double initBias;
+            if(!double.TryParse(InputTrainDataInitBias, out initBias))
             {
                 InputTrainDataInitBias = "0";
                 initBias = 0;
             }
 
-            decimal[] initWeight = new decimal[] { rx, ry };           
+            double[] initWeight = new double[] { rx, ry };           
             PerceptronTrainer = new PerceptronTrainer(initWeight, initBias, learnRate, DataGenerator.Positives, DataGenerator.Negatives);
             PerceptronTrainer.UseUnitVector = UseUnitVector ?? false;
 

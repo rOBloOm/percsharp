@@ -8,9 +8,9 @@ namespace Bloom.Percsharp.Domain
 {
     public class PerceptronTrainer
     {
-        private static decimal[] DefaultInitWeight = new decimal[] { 0, 0 };
-        private static decimal DefaultInitBias = 0;
-        private static decimal DefaultLearningRate = 1;
+        private static double[] DefaultInitWeight = new double[] { 0, 0 };
+        private static double DefaultInitBias = 0;
+        private static double DefaultLearningRate = 1;
         
         private Perceptron Perceptron;
         private List<Vector> Positives;
@@ -20,15 +20,18 @@ namespace Bloom.Percsharp.Domain
         public int Runs = 0;
         public int MaxRuns = 1000;
         public int Errors = 0;
-        public decimal LearningRate;
+        public double LearningRate;
 
         public bool UseUnitVector { get; set; }
 
-        public decimal InitBias { get; private set; }
+        public double InitBias { get; private set; }
         public Vector InitWeight { get; private set; }
 
-        public decimal CurrentBias => Perceptron.Bias;
-        public Vector CurrentWeight => Perceptron.W;        
+        public double CurrentBias => Perceptron.Bias;
+        public Vector CurrentWeight => Perceptron.W;
+
+        public Vector CurrentSepparationVectorPositive => new Vector(new double[] {-CurrentWeight[1], CurrentWeight[0] });
+        
 
         public bool Convergence = false;
         
@@ -41,7 +44,7 @@ namespace Bloom.Percsharp.Domain
 
         public PerceptronTrainerStepPrediction NextTrainStepPrediction => TrainStepPredict();
 
-        public PerceptronTrainer(decimal[] initWeiht, decimal initBias, decimal learningRate, List<Vector> positives, List<Vector> negatives)
+        public PerceptronTrainer(double[] initWeiht, double initBias, double learningRate, List<Vector> positives, List<Vector> negatives)
         {
             this.Init(initWeiht, initBias, learningRate, positives, negatives);
         }
@@ -50,7 +53,7 @@ namespace Bloom.Percsharp.Domain
 
         #region Initialization
 
-        public void Init(decimal[] initWeight, decimal initBias, decimal learningRate, List<Vector> positives, List<Vector> negatives)
+        public void Init(double[] initWeight, double initBias, double learningRate, List<Vector> positives, List<Vector> negatives)
         {
             this.Runs = 0;
             this.InitWeight = initWeight;
