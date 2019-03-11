@@ -7,7 +7,7 @@ namespace Bloom.Percsharp
     {
         static void Main(string[] args)
         {
-            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new decimal[] { 1, 0 }), 0, 100, 2);
+            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new double[] { 1, 0 }), 0, 100, 2);
             generator.run();
 
 

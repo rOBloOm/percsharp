@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,10 @@ namespace Bloom.Percsharp.Domain
     public class Vector
     {
         private double[] vector;
+
+        public Vector()
+        {
+        }
 
         public Vector(int size)
         {
@@ -22,6 +27,10 @@ namespace Bloom.Percsharp.Domain
         public Vector(double[] data)
         {
             vector = data;
+        }
+
+        public Vector(double x, double y) : this(new double[] {x, y })
+        {            
         }
 
         public double this[int i]
@@ -151,14 +160,6 @@ namespace Bloom.Percsharp.Domain
             return result;
         }
 
-        #endregion Vector Rotation
-
-        public override string ToString()
-        {
-            if (vector == null)
-                return string.Empty;
-
-            return string.Join(",", vector);
-        }
+        #endregion Vector Rotation        
     }
 }
