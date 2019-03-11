@@ -155,8 +155,8 @@ namespace Bloom.Percsharp.Domain
         public Vector Rotate(double rad)
         {
             double[] result = new double[2];
-            result[0] = vector[0] * Math.Cos(rad) - vector[1] * Math.Sin(rad);
-            result[1] = vector[0] * Math.Sin(rad) + vector[1] * Math.Cos(rad);
+            result[0] = Math.Round(vector[0] * Math.Cos(rad) - vector[1] * Math.Sin(rad), 5);
+            result[1] = Math.Round(vector[0] * Math.Sin(rad) + vector[1] * Math.Cos(rad), 5);
             return result;
         }
 
