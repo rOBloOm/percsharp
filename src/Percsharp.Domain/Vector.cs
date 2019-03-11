@@ -161,5 +161,13 @@ namespace Bloom.Percsharp.Domain
         }
 
         #endregion Vector Rotation        
+
+        public override string ToString()
+        {
+            if (vector == null)
+                return string.Empty;
+
+            return string.Join(",", vector);
+        }
     }
 }

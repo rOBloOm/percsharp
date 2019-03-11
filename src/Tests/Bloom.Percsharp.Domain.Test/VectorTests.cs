@@ -85,5 +85,13 @@ namespace Bloom.Percsharp.Domain.Test
             Assert.Equal(1, result[0]);
             Assert.Equal(0, result[1]);
         }
+
+        [Fact]
+        public void ToStringTest()
+        {
+            Vector v1 = new Vector(1, 2);
+
+            Assert.Equal("1,2", v1.ToString());
+        }
     }
 }

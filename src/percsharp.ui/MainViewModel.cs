@@ -359,6 +359,14 @@ namespace Bloom.Percsharp.Ui
             learnedWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.CurrentWeight[0], (double)PerceptronTrainer.CurrentWeight[1]));
 
             PlotModelGeneratedData.Series.Add(learnedWeightSeries);
+
+            LineSeries learnedSeparationLineSeries = new LineSeries() { Color = OxyColors.LightGreen };
+            Vector upperEnd = PerceptronTrainer.CurrentWeight.Rotate(0.5 * Math.PI).UnitVector();
+            Vector lowerEnd = PerceptronTrainer.CurrentWeight.Rotate(-0.5 * Math.PI).UnitVector();
+            learnedSeparationLineSeries.Points.Add(new DataPoint(lowerEnd[0], lowerEnd[1]));
+            learnedSeparationLineSeries.Points.Add(new DataPoint(upperEnd[0], upperEnd[1]));
+
+            PlotModelGeneratedData.Series.Add(learnedSeparationLineSeries);
         }
 
         private void PlotInitWeight()
@@ -369,6 +377,14 @@ namespace Bloom.Percsharp.Ui
             initialWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.InitWeight[0], (double)PerceptronTrainer.InitWeight[1]));
 
             PlotModelGeneratedData.Series.Add(initialWeightSeries);
+
+            LineSeries initialSeparationLine = new LineSeries() { Color = OxyColors.LightPink };
+            Vector upperEnd = PerceptronTrainer.InitWeight.Rotate(0.5 * Math.PI).UnitVector();
+            Vector lowerEnd = PerceptronTrainer.InitWeight.Rotate(-0.5 * Math.PI).UnitVector();
+            initialSeparationLine.Points.Add(new DataPoint(lowerEnd[0], lowerEnd[1]));
+            initialSeparationLine.Points.Add(new DataPoint(upperEnd[0], upperEnd[1]));
+
+            PlotModelGeneratedData.Series.Add(initialSeparationLine);
         }
 
         private void PlotInitializationVector()

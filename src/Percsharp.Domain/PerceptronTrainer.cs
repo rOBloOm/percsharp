@@ -28,10 +28,7 @@ namespace Bloom.Percsharp.Domain
         public Vector InitWeight { get; private set; }
 
         public double CurrentBias => Perceptron.Bias;
-        public Vector CurrentWeight => Perceptron.W;
-
-        public Vector CurrentSepparationVectorPositive => new Vector(new double[] {-CurrentWeight[1], CurrentWeight[0] });
-        
+        public Vector CurrentWeight => Perceptron.W;        
 
         public bool Convergence = false;
         
