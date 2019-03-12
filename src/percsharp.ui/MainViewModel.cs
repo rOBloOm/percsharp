@@ -390,13 +390,13 @@ namespace Bloom.Percsharp.Ui
                 InitTrainer();
             }
 
-            if (PerceptronTrainer.State != PerceptronTrainerState.Initialized && PerceptronTrainer.State != PerceptronTrainerState.Training)
+            if (PerceptronTrainer.State == PerceptronTrainerState.Finished)
             {
-                Log("Wrong PerceptronTrainerState: " + PerceptronTrainer.State);
+                Log("Converged!");
                 return;
             }
 
-            if (PerceptronTrainer.TrainPass(DataGenerator.Positives, DataGenerator.Negatives))
+            if (PerceptronTrainer.TrainPass())
             {
                 Log($"Pass {PerceptronTrainer.Runs}: Converged!");
             }
@@ -673,7 +673,7 @@ namespace Bloom.Percsharp.Ui
 
         private bool TrainPerceptron()
         {
-            bool converged = PerceptronTrainer.TrainRun(DataGenerator.Positives, DataGenerator.Negatives);
+            bool converged = PerceptronTrainer.TrainRun();
             PrintState();
 
             if (!converged)
@@ -707,10 +707,10 @@ namespace Bloom.Percsharp.Ui
             }
 
             PlotState();
-            PlotAddPrediction();
-            PrintState();
+            PlotAddPrediction();            
 
-            PerceptronTrainer.TrainStep(DataGenerator.Positives, DataGenerator.Negatives);
+            PerceptronTrainer.TrainStep();
+            PrintState();
 
             return !prediction.Error;
         }

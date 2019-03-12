@@ -136,7 +136,7 @@
                         <Button Width="80" Margin="0, 0, 10, 0" Command="{Binding InitCommand}">Init</Button>
                         <Button Width="80" Margin="0, 0, 10, 0" Command="{Binding TrainPassCommand}">Next Pass</Button>
                         <Button Width="80" Margin="0, 0, 10, 0" Command="{Binding TrainStepCommand}">Next Step</Button>
-                        <Button Width="80" Margin="0, 0, 0, 0" Command="{Binding TrainCommand}">Run</Button>
+                        <Button Width="80" Margin="0, 0, 0, 0" Command="{Binding TrainCommand}">Finish</Button>
                     </StackPanel>
                    
                     <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="7"
