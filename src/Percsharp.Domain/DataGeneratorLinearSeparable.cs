@@ -34,12 +34,12 @@ namespace Bloom.Percsharp.Domain
         public List<Vector> Positives => postitives;
         public List<Vector> Negatives => negatives;
 
-        public void run()
+        public void run(int seed)
         {
             negatives = new List<Vector>();
             postitives = new List<Vector>();
 
-            Random rnd = new Random();
+            Random rnd = new Random(seed);
 
             for (int i = 0; i < size; i++)
             {

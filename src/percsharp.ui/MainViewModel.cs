@@ -7,6 +7,8 @@ using System;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Bloom.Percsharp.Ui
 {
@@ -54,6 +56,17 @@ namespace Bloom.Percsharp.Ui
             {
                 inputTestDataBias = value;
                 OnPropertyChanged(nameof(InputTestDataBias));
+            }
+        }
+
+        private string inputTestDataSeed;
+        public string InputTestDataSeed
+        {
+            get => inputTestDataSeed;
+            set
+            {
+                inputTestDataSeed = value;
+                OnPropertyChanged(nameof(InputTestDataSeed));
             }
         }
 
@@ -314,6 +327,7 @@ namespace Bloom.Percsharp.Ui
             this.InputTestDataVectorYValue = "0.7";
             this.InputTestDataDataPoints = "20";
             this.InputTestDataBias = string.Empty;
+            this.InputTestDataSeed = "1337";
 
             //Lean Input Values
             this.InputTrainDataVectorXValue = string.Empty;
@@ -343,6 +357,7 @@ namespace Bloom.Percsharp.Ui
 
             DataGenerator = GenerateData();
             PlotState();
+
             Log($"Test dataset generated with weight: {DataGenerator.InitVector} and bias: {DataGenerator.InitBias}");
             if (PerceptronTrainer != null) PerceptronTrainer.Reset();
         }
@@ -367,7 +382,10 @@ namespace Bloom.Percsharp.Ui
 
             InitPerceptrontTrainer();
             bool successful = TrainPerceptron();
-            if (successful) PlotState();
+            if (successful)
+            {
+                PlotState();
+            }
         }
 
         private void TrainStepClick()
@@ -510,10 +528,12 @@ namespace Bloom.Percsharp.Ui
 
             //Axis
             PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Bottom, AxislineStyle = LineStyle.Solid, Minimum = -1.1, Maximum = 1.1 });
-            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Left, AxislineStyle = LineStyle.Solid, Minimum = -1.1, Maximum = 1.1 });
+            PlotModelGeneratedData.Axes.Add(new LinearAxis() { PositionAtZeroCrossing = true, Position = AxisPosition.Left, AxislineStyle = LineStyle.Solid, Minimum = -1.1, Maximum = 1.1 });            
 
-            //Plot
             OxyPlot.Wpf.PlotView plotView = Window.PlotGeneratedData;
+
+            PlotFit();
+
             plotView.Model = PlotModelGeneratedData;
             plotView.InvalidatePlot(true);
             plotView.InvalidateVisual();
@@ -619,7 +639,43 @@ namespace Bloom.Percsharp.Ui
                 PlotModelGeneratedData.Series.Add(lineSeriesCorrection);
             }
 
+            PlotFit();
             PlotModelGeneratedData.InvalidatePlot(true);
+        }
+
+        private void PlotFit()
+        {
+            double max = 0;
+
+            if(PerceptronTrainer == null)
+            {
+                AdjustMaxMin(DataGenerator.InitVector, ref max);
+            }            
+            DataGenerator.Positives.ForEach(v => AdjustMaxMin(v, ref max));
+            DataGenerator.Negatives.ForEach(v => AdjustMaxMin(v, ref max));
+
+            if(PerceptronTrainer != null)
+            {
+                AdjustMaxMin(PerceptronTrainer.CurrentWeight, ref max);
+            }
+
+            max += 0.1;
+
+            Axis bottomAxis = PlotModelGeneratedData.Axes.Single(ax => ax.Position == AxisPosition.Bottom);            
+            bottomAxis.Maximum = max;
+            bottomAxis.Minimum = -max;
+
+            Axis leftAxis = PlotModelGeneratedData.Axes.Single(ax => ax.Position == AxisPosition.Left);
+            leftAxis.Maximum = max;
+            leftAxis.Minimum = -max;
+        }
+
+        private static void AdjustMaxMin(Vector v, ref double max)
+        {
+            max = Math.Max(Math.Abs(v[0]), max);
+            max = Math.Max(Math.Abs(v[0]), max);
+            max = Math.Max(Math.Abs(v[1]), max);
+            max = Math.Max(Math.Abs(v[1]), max);
         }
 
         private void PrintState()
@@ -675,8 +731,14 @@ namespace Bloom.Percsharp.Ui
                 InputTestDataBias = "0";
             }
 
+            if(!int.TryParse(InputTestDataSeed, out int seed))
+            {
+                seed = 1337;
+                InputTestDataSeed = seed.ToString();
+            }
+
             DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new double[] { rx, ry }), bias, points, 2);
-            generator.run();
+            generator.run(seed);
 
             return generator;
         }
