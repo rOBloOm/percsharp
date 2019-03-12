@@ -20,6 +20,8 @@ namespace Bloom.Percsharp.Ui
 
         #region Properties
 
+        #region Test Data Properties
+
         private string inputTestDataVectorXValue;
         public string InputTestDataVectorXValue
         {
@@ -54,6 +56,10 @@ namespace Bloom.Percsharp.Ui
                 OnPropertyChanged(nameof(InputTestDataBias));
             }
         }
+
+        #endregion Test Data Properties
+
+        #region Training Data Properties
 
         private string inputTrainDataVectorXValue;
         public string InputTrainDataVectorXValue
@@ -99,8 +105,31 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
-        public bool? AdaptLearningRate { get; set; }
-        public bool? UseUnitVector { get; set; }
+        private string nextStepButtonLabel;
+        public string NextStepButtonLabel
+        {
+            get => nextStepButtonLabel;
+            set
+            {
+                nextStepButtonLabel = value;
+                OnPropertyChanged(nameof(NextStepButtonLabel));
+            }
+        }
+
+        private System.Windows.Visibility learnButtonVisibility;
+        public System.Windows.Visibility LearnButtonVisibility
+        {
+            get => learnButtonVisibility;
+            set
+            {
+                learnButtonVisibility = value;
+                OnPropertyChanged(nameof(LearnButtonVisibility));
+            }
+        }
+
+        #endregion Training Data Properties
+
+        #region Result Properties
 
         private string resultRuns;
         public string ResultRuns
@@ -168,6 +197,10 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
+        #endregion Result Properties
+
+        #region Log Properties
+
         private string logText;
         public string LogText
         {
@@ -183,7 +216,7 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
-        #endregion Properties
+        #endregion Log Properties
 
         #region Properties Commands
 
@@ -250,7 +283,7 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
-        private ICommand _trainStepErrorCommand;        
+        private ICommand _trainStepErrorCommand;
         public ICommand TrainStepErrorCommand
         {
             get
@@ -258,7 +291,19 @@ namespace Bloom.Percsharp.Ui
                 return _trainStepErrorCommand ?? (_trainStepErrorCommand = new CommandHandler(() => TrainStepErrorClick(), true));
             }
         }
+
+        private ICommand _trainStepLearnCommand;
+        public ICommand TrainStepLearnCommand
+        {
+            get
+            {
+                return _trainStepLearnCommand ?? (_trainStepLearnCommand = new CommandHandler(() => TrainStepLearnClick(), true));
+            }
+        }
+
         #endregion Properties Command
+
+        #endregion Properties
 
         public MainViewModel(MainWindow window)
         {
@@ -275,11 +320,9 @@ namespace Bloom.Percsharp.Ui
             this.InputTrainDataVectorYValue = string.Empty;
             this.InputTrainDataLearningRate = "1";
             this.InputTrainDataInitBias = string.Empty;
+            this.NextStepButtonLabel = "Next Step";
 
-            //Option Default
-            this.UseUnitVector = false;
-            this.AdaptLearningRate = false;
-
+            this.LearnButtonVisibility = System.Windows.Visibility.Hidden;
 
             DataGenerator = GenerateData();
             PlotState();
@@ -289,11 +332,15 @@ namespace Bloom.Percsharp.Ui
 
         public void RandomizeTestInputClick()
         {
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
+
             RandomizeTestInput();
         }
 
         public void GenerateDataClick()
         {
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
+
             DataGenerator = GenerateData();
             PlotState();
             Log($"Test dataset generated with weight: {DataGenerator.InitVector} and bias: {DataGenerator.InitBias}");
@@ -302,16 +349,22 @@ namespace Bloom.Percsharp.Ui
 
         public void RandomizeTrainingInputClick()
         {
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
+
             RandomizeTrainingInput();
         }
 
         public void InitTrainerClick()
         {
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
+
             InitTrainer();
         }
 
         public void TrainPerceptronClick()
         {
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
+
             InitPerceptrontTrainer();
             bool successful = TrainPerceptron();
             if (successful) PlotState();
@@ -319,6 +372,8 @@ namespace Bloom.Percsharp.Ui
 
         private void TrainStepClick()
         {
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
+
             if (PerceptronTrainer == null)
             {
                 InitTrainer();
@@ -332,7 +387,7 @@ namespace Bloom.Percsharp.Ui
                 return;
             }
 
-            TrainStep();
+            bool error = TrainStep();
 
             if (PerceptronTrainer.IsNewPass)
             {
@@ -342,10 +397,17 @@ namespace Bloom.Percsharp.Ui
                     Log($"Converged!");
                 }
             }
+
+            if(error)
+            {
+                LearnButtonVisibility = System.Windows.Visibility.Visible;
+            }
         }
 
         private void TrainStepErrorClick()
         {
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
+
             if (PerceptronTrainer == null)
             {
                 InitTrainer();
@@ -359,7 +421,7 @@ namespace Bloom.Percsharp.Ui
                 return;
             }
 
-            while (TrainStep())
+            while (!TrainStep())
             {
                 if (PerceptronTrainer.IsNewPass)
                 {
@@ -381,10 +443,20 @@ namespace Bloom.Percsharp.Ui
                     return;
                 }
             }
+
+            LearnButtonVisibility = System.Windows.Visibility.Visible;
+        }
+
+        private void TrainStepLearnClick()
+        {
+            PlotState();
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
         }
 
         private void TrainPassClick()
         {
+            LearnButtonVisibility = System.Windows.Visibility.Hidden;
+
             if (PerceptronTrainer == null)
             {
                 InitTrainer();
@@ -402,7 +474,7 @@ namespace Bloom.Percsharp.Ui
             }
             else
             {
-                Log($"Pass {PerceptronTrainer.Runs}: Errors: {PerceptronTrainer.Errors} Weights {PerceptronTrainer.CurrentWeight}");
+                Log($"Pass {PerceptronTrainer.Runs}: Errors: {PerceptronTrainer.LastPassErrors} Weights {PerceptronTrainer.CurrentWeight}");
             }
 
             PlotState();
@@ -666,7 +738,6 @@ namespace Bloom.Percsharp.Ui
 
             double[] initWeight = new double[] { rx, ry };
             PerceptronTrainer = new PerceptronTrainer(initWeight, initBias, learnRate, DataGenerator.Positives, DataGenerator.Negatives);
-            PerceptronTrainer.UseUnitVector = UseUnitVector ?? false;
 
             Log($"Trainer initialized: weight: {PerceptronTrainer.InitWeight} bias {PerceptronTrainer.InitBias}");
         }
@@ -703,6 +774,7 @@ namespace Bloom.Percsharp.Ui
             }
             else
             {
+
                 Log($"TrainStep: Datapoint {prediction.DataPoint} is invalid. Adjusting weight.");
             }
 
@@ -712,7 +784,7 @@ namespace Bloom.Percsharp.Ui
             PerceptronTrainer.TrainStep();
             PrintState();
 
-            return !prediction.Error;
+            return prediction.Error;
         }
 
         #endregion Train Perceptron

@@ -22,8 +22,6 @@ namespace Bloom.Percsharp.Domain
         public int Errors = 0;
         public double LearningRate;
 
-        public bool UseUnitVector { get; set; }
-
         public double InitBias { get; private set; }
         public Vector InitWeight { get; private set; }
 
@@ -59,7 +57,6 @@ namespace Bloom.Percsharp.Domain
             this.Perceptron = new Perceptron(new Vector(initWeight), initBias, learningRate);
             this.Positives = positives;
             this.Negatives = negatives;
-            this.UseUnitVector = false;
 
             State = PerceptronTrainerState.Initialized;
         }
@@ -126,11 +123,6 @@ namespace Bloom.Percsharp.Domain
                     Perceptron.W -= LearningRate * v;
                     Errors++;
                 }
-            }
-
-            if (UseUnitVector)
-            {
-                Perceptron.W = Perceptron.W.UnitVector();
             }
 
             if(CurrentTrainStep >= Positives.Count + Negatives.Count - 1)

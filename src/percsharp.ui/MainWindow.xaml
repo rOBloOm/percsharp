@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="http://oxyplot.org/wpf"        
     mc:Ignorable="d"
-    Title="Training a Linear Separable Data Classifier"
+    Title="Training a Binary Classifier with Linear Separable Data"
     Height="650"
     Width="1410"
     Background="#e5e5e5">
@@ -106,7 +106,6 @@
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <Label Grid.Column="0" Grid.Row="0">Init Weight</Label>
@@ -124,25 +123,20 @@
                     <Label Grid.Column="0" Grid.Row="1">Init Bias</Label>
                     <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding InputTrainDataInitBias}"></TextBox>
 
-                    <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="7"
-                                Margin="190, 5, 0, 0" HorizontalAlignment="Left">
-                        <CheckBox Margin="3" IsChecked="{Binding AdaptLearningRate}" >Auto adapt learning Rate</CheckBox>
-                        <CheckBox Margin="3" IsChecked="{Binding UseUnitVector}">Use Unit Vector</CheckBox>
-                    </StackPanel>
-                    
-                    <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="7" 
+                    <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="7" 
                                 Orientation="Horizontal" HorizontalAlignment="Right" 
                                 Margin="0, 10, 0, 0">
                         <Button Width="80" Margin="0, 0, 10, 0" Command="{Binding InitCommand}">Init</Button>
                         <Button Width="80" Margin="0, 0, 10, 0" Command="{Binding TrainPassCommand}">Next Pass</Button>
                         <Button Width="80" Margin="0, 0, 10, 0" Command="{Binding TrainStepCommand}">Next Step</Button>
-                        <Button Width="80" Margin="0, 0, 0, 0" Command="{Binding TrainCommand}">Finish</Button>
+                        <Button Width="80" Margin="0, 0, 0, 0" Command="{Binding TrainStepErrorCommand}">Next Error</Button>
                     </StackPanel>
                    
-                    <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="7"
+                    <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="7"
                                 Margin="0, 10, 0, 0">
                         <Label Width="184"></Label>
-                        <Button Width="80" Command="{Binding TrainStepErrorCommand}">Next Error</Button>
+                        <Button Width="80" Visibility="{Binding LearnButtonVisibility}" Command="{Binding TrainStepLearnCommand}">Learn!</Button>
+                        <Button Width="80" Margin="9, 0, 0, 0" Command="{Binding TrainCommand}">Finish</Button>
                     </StackPanel>
 
                 </Grid>
