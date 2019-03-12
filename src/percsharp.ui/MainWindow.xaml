@@ -73,7 +73,10 @@
                     <TextBox Grid.Column="2" Grid.Row="0" Text="{Binding InputTestDataVectorXValue}"></TextBox>
                     <Label Grid.Column="3" Grid.Row="0" HorizontalAlignment="Right">Y:</Label>
                     <TextBox Grid.Column="4" Grid.Row="0" Text="{Binding InputTestDataVectorYValue}"></TextBox>
-                    <Label Grid.Column="5" Grid.Row="0" HorizontalAlignment="Right">Data Points</Label>
+                    <StackPanel Orientation="Horizontal" Grid.Column="5" Grid.Row="0">
+                        <Button Command="{Binding RandomizeTestInputCommand}" Margin="5, 0, 0, 0">rnd</Button>
+                        <Label Margin="25, 0, 0, 0">Data Points:</Label>
+                    </StackPanel>
                     <TextBox Grid.Column="6" Grid.Row="0" Width="50" Text="{Binding InputTestDataDataPoints}"></TextBox>
                     
                     <Label Grid.Column="0" Grid.Row="1">Bias</Label>

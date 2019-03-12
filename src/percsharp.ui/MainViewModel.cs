@@ -20,10 +20,40 @@ namespace Bloom.Percsharp.Ui
 
         #region Properties
 
-        public string InputTestDataVectorXValue { get; set; }
-        public string InputTestDataVectorYValue { get; set; }
+        private string inputTestDataVectorXValue;
+        public string InputTestDataVectorXValue
+        {
+            get => inputTestDataVectorXValue;
+            set
+            {
+                inputTestDataVectorXValue = value;
+                OnPropertyChanged(nameof(InputTestDataVectorXValue));
+            }
+        }
+
+        private string inputTestDataVectorYValue;
+        public string InputTestDataVectorYValue
+        {
+            get => inputTestDataVectorYValue;
+            set
+            {
+                inputTestDataVectorYValue = value;
+                OnPropertyChanged(nameof(inputTestDataVectorYValue));
+            }
+        }
+
         public string InputTestDataDataPoints { get; set; }
-        public string InputTestDataBias { get; set; }
+
+        private string inputTestDataBias;
+        public string InputTestDataBias
+        {
+            get => inputTestDataBias;
+            set
+            {
+                inputTestDataBias = value;
+                OnPropertyChanged(nameof(InputTestDataBias));
+            }
+        }
 
         private string inputTrainDataVectorXValue;
         public string InputTrainDataVectorXValue
@@ -157,6 +187,15 @@ namespace Bloom.Percsharp.Ui
 
         #region Properties Commands
 
+        private ICommand _randomizeTestInputCommand;
+        public ICommand RandomizeTestInputCommand
+        {
+            get
+            {
+                return _randomizeTestInputCommand ?? (_randomizeTestInputCommand = new CommandHandler(() => RandomizeTestInputClick(), true));
+            }
+
+        }
         private ICommand _generateCommand;
         public ICommand GenerateCommand
         {
@@ -247,6 +286,11 @@ namespace Bloom.Percsharp.Ui
         }
 
         #region Click Handlers
+
+        public void RandomizeTestInputClick()
+        {
+            RandomizeTestInput();
+        }
 
         public void GenerateDataClick()
         {
@@ -483,7 +527,7 @@ namespace Bloom.Percsharp.Ui
         {
             PerceptronTrainerStepPrediction prediction = PerceptronTrainer.NextTrainStepPrediction;
 
-            OxyColor color = prediction.isPositiveDatapoint ? OxyColors.Orange : OxyColors.DarkOrange;
+            OxyColor color = prediction.isPositiveDatapoint ? OxyColors.DarkBlue : OxyColors.DarkRed;
 
             ScatterSeries scatterSeriesPositivePrediction = new ScatterSeries() { MarkerType = MarkerType.Circle, MarkerFill = color, MarkerSize = 5 };
             var point = new ScatterPoint((double)prediction.DataPoint[0], (double)prediction.DataPoint[1]);
@@ -517,6 +561,19 @@ namespace Bloom.Percsharp.Ui
         }
 
         #endregion Plot Data
+
+        public void RandomizeTestInput()
+        {
+            Random rnd = new Random();
+
+            double rx = (double)rnd.Next(-10, 10) / 10;
+            InputTestDataVectorXValue = rx.ToString();
+
+            double ry = (double)rnd.Next(-10, 10) / 10;
+            InputTestDataVectorYValue = ry.ToString();
+
+            InputTestDataBias = "0";
+        }
 
         public DataGeneratorLinearSeparable GenerateData()
         {

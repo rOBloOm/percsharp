@@ -18,7 +18,7 @@ namespace Bloom.Percsharp.Domain
 
         public PerceptronTrainerState State { get; private set; }
         public int Runs = 0;
-        public int MaxRuns = 1000;
+        public int MaxRuns = 5000;
         public int Errors = 0;
         public double LearningRate;
 
