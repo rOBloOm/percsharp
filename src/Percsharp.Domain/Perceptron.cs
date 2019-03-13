@@ -48,7 +48,7 @@ namespace Bloom.Percsharp.Domain
         
         public bool Classify(Vector input)
         {
-            return input * w  + b < 0;
+            return input * w  + b >= 0;
         }
     }
 }

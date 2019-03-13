@@ -8,7 +8,7 @@ namespace Bloom.Percsharp
         static void Main(string[] args)
         {
             DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new double[] { 1, 0 }), 0, 100, 2);
-            generator.run();
+            generator.run(1337);
 
 
             Console.WriteLine("Positives");

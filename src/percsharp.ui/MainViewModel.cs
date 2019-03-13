@@ -558,8 +558,12 @@ namespace Bloom.Percsharp.Ui
             PlotModelGeneratedData.Series.Add(learnedWeightSeries);
 
             LineSeries learnedSeparationLineSeries = new LineSeries() { Title = "Learned Separation Line", Color = OxyColors.LightGreen };
+            //Vector upperEnd = PerceptronTrainer.SeparationLineUpperEnd;
+            //Vector lowerEnd = PerceptronTrainer.SeparationLineLowerEnd;
+
             Vector upperEnd = PerceptronTrainer.CurrentWeight.Rotate(0.5 * Math.PI).UnitVector();
             Vector lowerEnd = PerceptronTrainer.CurrentWeight.Rotate(-0.5 * Math.PI).UnitVector();
+
             learnedSeparationLineSeries.Points.Add(new DataPoint(lowerEnd[0], lowerEnd[1]));
             learnedSeparationLineSeries.Points.Add(new DataPoint(upperEnd[0], upperEnd[1]));
 
@@ -588,14 +592,15 @@ namespace Bloom.Percsharp.Ui
         {
             //Initialization Vector from test data
             LineSeries initVectorSeries = new LineSeries() { Title = "Data Initialization Vector", Color = OxyColors.Black };
-            initVectorSeries.Points.Add(new DataPoint(0, 0));
-            initVectorSeries.Points.Add(new DataPoint((double)DataGenerator.InitVector[0], (double)DataGenerator.InitVector[1]));
+            initVectorSeries.Points.Add(new DataPoint(0 + DataGenerator.XDeviation, 0));
+            initVectorSeries.Points.Add(new DataPoint((double)DataGenerator.InitVector[0] + DataGenerator.XDeviation, (double)DataGenerator.InitVector[1]));
 
             PlotModelGeneratedData.Series.Add(initVectorSeries);
 
             LineSeries initVectorSeparationLine = new LineSeries() { Title = "Data Initialization Separation Line", Color = OxyColors.LightGray };
-            Vector upperEnd = DataGenerator.InitVector.Rotate(0.5 * Math.PI).UnitVector();
-            Vector lowerEnd = DataGenerator.InitVector.Rotate(-0.5 * Math.PI).UnitVector();
+
+            Vector upperEnd = DataGenerator.SeparationLineUpperEnd;
+            Vector lowerEnd = DataGenerator.SeparationLineLowerEnd;
             initVectorSeparationLine.Points.Add(new DataPoint(lowerEnd[0], lowerEnd[1]));
             initVectorSeparationLine.Points.Add(new DataPoint(upperEnd[0], upperEnd[1]));
 
@@ -710,8 +715,6 @@ namespace Bloom.Percsharp.Ui
 
             double ry = (double)rnd.Next(-10, 10) / 10;
             InputTestDataVectorYValue = ry.ToString();
-
-            InputTestDataBias = "0";
         }
 
         public DataGeneratorLinearSeparable GenerateData()

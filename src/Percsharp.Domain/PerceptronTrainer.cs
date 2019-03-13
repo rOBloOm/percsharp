@@ -31,6 +31,13 @@ namespace Bloom.Percsharp.Domain
         public bool Convergence = false;
         
         private int CurrentTrainStep = 0;
+
+        public Vector SeparationLineUpperEnd => (CurrentWeight * 10).Rotate(0.5 * Math.PI).Add(new Vector(-XDeviation, 0));
+
+        public Vector SeparationLineLowerEnd => (CurrentWeight * 10).Rotate(-0.5 * Math.PI).Add(new Vector(-XDeviation, 0));
+
+        public double XDeviation => CurrentBias / CurrentWeight[0];
+
         public bool IsNewPass => CurrentTrainStep == 0;
 
         public int LastPassErrors { get; private set; }
@@ -112,6 +119,7 @@ namespace Bloom.Percsharp.Domain
                 if ((v * Perceptron.W) <= 0)
                 {
                     Perceptron.W += LearningRate * v;
+                    //Perceptron.Bias += LearningRate;
                     Errors++;
                 }
             }
@@ -121,6 +129,7 @@ namespace Bloom.Percsharp.Domain
                 if ((v * Perceptron.W) > 0)
                 {
                     Perceptron.W -= LearningRate * v;
+                    //Perceptron.Bias -= LearningRate;
                     Errors++;
                 }
             }
