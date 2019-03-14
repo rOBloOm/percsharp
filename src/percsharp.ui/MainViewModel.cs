@@ -422,6 +422,7 @@ namespace Bloom.Percsharp.Ui
                 Log($"Run {PerceptronTrainer.Runs} finished with {PerceptronTrainer.LastPassErrors} erros");
                 if (PerceptronTrainer.Convergence)
                 {
+                    PlotState();
                     Log($"Converged!");
                 }
             }
@@ -457,6 +458,7 @@ namespace Bloom.Percsharp.Ui
                     if (PerceptronTrainer.Convergence)
                     {
                         Log($"Converged!");
+                        PlotState();
                         return;
                     }
                 }
@@ -468,6 +470,7 @@ namespace Bloom.Percsharp.Ui
                 if (PerceptronTrainer.Convergence)
                 {
                     Log($"Converged!");
+                    PlotState();
                     return;
                 }
             }
@@ -569,9 +572,6 @@ namespace Bloom.Percsharp.Ui
             Vector upperEnd = PerceptronTrainer.SeparationLineUpperEnd;
             Vector lowerEnd = PerceptronTrainer.SeparationLineLowerEnd;
 
-            //Vector upperEnd = PerceptronTrainer.CurrentWeight.Rotate(0.5 * Math.PI).UnitVector();
-            //Vector lowerEnd = PerceptronTrainer.CurrentWeight.Rotate(-0.5 * Math.PI).UnitVector();
-
             learnedSeparationLineSeries.Points.Add(new DataPoint(lowerEnd[0], lowerEnd[1]));
             learnedSeparationLineSeries.Points.Add(new DataPoint(upperEnd[0], upperEnd[1]));
 
@@ -579,21 +579,20 @@ namespace Bloom.Percsharp.Ui
         }
 
         private void PlotInitWeight()
-        {
-            //Perceptron initial weight
+        {             
             LineSeries initialWeightSeries = new LineSeries() { Title = "Init Weight", Color = OxyColors.Purple };
-            initialWeightSeries.Points.Add(new DataPoint(0, 0));
-            initialWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.InitWeight[0], (double)PerceptronTrainer.InitWeight[1]));
+            initialWeightSeries.Points.Add(new DataPoint(-PerceptronTrainer.XDeviation, 0));
+            initialWeightSeries.Points.Add(new DataPoint((double)PerceptronTrainer.InitWeight[0] - PerceptronTrainer.XDeviation, (double)PerceptronTrainer.InitWeight[1]));
 
             PlotModelGeneratedData.Series.Add(initialWeightSeries);
 
             LineSeries initialSeparationLine = new LineSeries() { Title = "Init Separation Line", Color = OxyColors.LightPink };
-            Vector upperEnd = PerceptronTrainer.InitWeight.Rotate(0.5 * Math.PI).UnitVector() * 10;
-            Vector lowerEnd = PerceptronTrainer.InitWeight.Rotate(-0.5 * Math.PI).UnitVector() * 10;
+            Vector upperEnd = PerceptronTrainer.SeparationLineUpperEnd;
+            Vector lowerEnd = PerceptronTrainer.SeparationLineLowerEnd;
             initialSeparationLine.Points.Add(new DataPoint(lowerEnd[0], lowerEnd[1]));
             initialSeparationLine.Points.Add(new DataPoint(upperEnd[0], upperEnd[1]));
 
-            PlotModelGeneratedData.Series.Add(initialSeparationLine);
+            PlotModelGeneratedData.Series.Add(initialSeparationLine);                    
         }
 
         private void PlotInitializationVector()
@@ -639,48 +638,56 @@ namespace Bloom.Percsharp.Ui
 
         private void PlotAddPrediction()
         {
+            Console.WriteLine("Plot pred");
             PerceptronTrainerStepPrediction prediction = PerceptronTrainer.NextTrainStepPrediction;
 
             OxyColor color = prediction.isPositiveDatapoint ? OxyColors.DarkBlue : OxyColors.DarkRed;
 
+            // Current Datapoint
             ScatterSeries scatterSeriesPrediction = new ScatterSeries() { MarkerType = MarkerType.Circle, MarkerFill = color, MarkerSize = 5 };
-            var point = new ScatterPoint((double)prediction.DataPoint[0], (double)prediction.DataPoint[1]);
+            var point = new ScatterPoint(prediction.DataPoint[0], prediction.DataPoint[1]);
             scatterSeriesPrediction.Points.Add(point);
             PlotModelGeneratedData.Series.Add(scatterSeriesPrediction);
 
             if (prediction.Error)
             {
-                if(PerceptronTrainer.EnableBiasedLearning)
+                if(PerceptronTrainer.BiasedLearning)
                 {
-                    LineSeries lineSeriesCurrentVector = new LineSeries() { Color = color };
-                    lineSeriesCurrentVector.Points.Add(new DataPoint(0, 0));
-                    lineSeriesCurrentVector.Points.Add(new DataPoint((double)prediction.DataPoint[0], (double)prediction.DataPoint[1]));
-                    PlotModelGeneratedData.Series.Add(lineSeriesCurrentVector);
+                    LineSeries lineSeriesCurrentDatapoint = new LineSeries() { Color = color };
+                    lineSeriesCurrentDatapoint.Points.Add(new DataPoint(0, 0));
+                    lineSeriesCurrentDatapoint.Points.Add(new DataPoint(prediction.DataPoint[0], prediction.DataPoint[1]));
+                    PlotModelGeneratedData.Series.Add(lineSeriesCurrentDatapoint);
 
-                    LineSeries lineSeriesWeightCorrection = new LineSeries() { Color = color };
-                    lineSeriesWeightCorrection.Points.Add(new DataPoint((double)prediction.CurrentWeight[0] - prediction.CurrentXDeviation, (double)prediction.CurrentWeight[1]));
-                    lineSeriesWeightCorrection.Points.Add(new DataPoint((double)prediction.ResultingWeight[0] - prediction.CurrentXDeviation, (double)prediction.ResultingWeight[1]));
+                    LineSeries lineSeriesWeightCorrection = new LineSeries() { Title="Weight Correction", Color = color };
+                    lineSeriesWeightCorrection.Points.Add(new DataPoint(prediction.CurrentWeight[0] - prediction.CurrentXDeviation, prediction.CurrentWeight[1]));
+                    lineSeriesWeightCorrection.Points.Add(new DataPoint(prediction.ResultingWeight[0] - prediction.CurrentXDeviation, prediction.ResultingWeight[1]));
                     PlotModelGeneratedData.Series.Add(lineSeriesWeightCorrection);
+
+                    LineSeries lineSeriesBiasCorrection = new LineSeries() { Title="Bias Correction", Color = OxyColors.Orange };
+                    lineSeriesBiasCorrection.Points.Add(new DataPoint(prediction.ResultingWeight[0] - prediction.CurrentXDeviation, prediction.ResultingWeight[1]));
+                    lineSeriesBiasCorrection.Points.Add(new DataPoint(prediction.ResultingWeight[0] - prediction.ResultingXDeviation, prediction.ResultingWeight[1]));
+
+                    PlotModelGeneratedData.Series.Add(lineSeriesBiasCorrection);
                 }
                 else
                 {
-                    LineSeries lineSeriesCurrentVector = new LineSeries() { Color = color };
-                    lineSeriesCurrentVector.Points.Add(new DataPoint(0, 0));
-                    lineSeriesCurrentVector.Points.Add(new DataPoint((double)prediction.DataPoint[0], (double)prediction.DataPoint[1]));
-                    PlotModelGeneratedData.Series.Add(lineSeriesCurrentVector);
+                    LineSeries lineSeriesCurrentDatapoint = new LineSeries() { Color = color };
+                    lineSeriesCurrentDatapoint.Points.Add(new DataPoint(0, 0));
+                    lineSeriesCurrentDatapoint.Points.Add(new DataPoint(prediction.DataPoint[0], prediction.DataPoint[1]));
+                    PlotModelGeneratedData.Series.Add(lineSeriesCurrentDatapoint);
 
                     LineSeries lineSeriesCorrection = new LineSeries() { Color = color };
-                    lineSeriesCorrection.Points.Add(new DataPoint((double)prediction.CurrentWeight[0], (double)prediction.CurrentWeight[1]));
-                    lineSeriesCorrection.Points.Add(new DataPoint((double)prediction.ResultingWeight[0], (double)prediction.ResultingWeight[1]));
+                    lineSeriesCorrection.Points.Add(new DataPoint(prediction.CurrentWeight[0], prediction.CurrentWeight[1]));
+                    lineSeriesCorrection.Points.Add(new DataPoint(prediction.ResultingWeight[0], prediction.ResultingWeight[1]));
                     PlotModelGeneratedData.Series.Add(lineSeriesCorrection);
                 }                
             }
 
-            PlotFit();
+            PlotFit(true);
             PlotModelGeneratedData.InvalidatePlot(true);
         }
 
-        private void PlotFit()
+        private void PlotFit(bool includePrediction = false)
         {
             double max = 0;
 
@@ -694,6 +701,26 @@ namespace Bloom.Percsharp.Ui
             if(PerceptronTrainer != null)
             {
                 AdjustMaxMin(PerceptronTrainer.CurrentWeight, ref max);
+
+                if(PerceptronTrainer.BiasedLearning)
+                {
+                    AdjustMaxMin(new Vector(-PerceptronTrainer.XDeviation, 0), ref max);
+                    AdjustMaxMin(PerceptronTrainer.CurrentWeight.Add(new Vector(-PerceptronTrainer.XDeviation, 0)), ref max);                    
+                }
+
+                if(includePrediction)
+                {
+                    PerceptronTrainerStepPrediction prediction = PerceptronTrainer.NextTrainStepPrediction;
+                    if (prediction.Error)
+                    {
+                        AdjustMaxMin(prediction.ResultingWeight, ref max);
+                        if (PerceptronTrainer.BiasedLearning)
+                        {
+                            AdjustMaxMin(prediction.CurrentWeight.Add(new Vector(-prediction.CurrentXDeviation, 0)) + prediction.DataPoint, ref max);
+                            AdjustMaxMin(prediction.ResultingWeight.Add(new Vector(-prediction.ResultingXDeviation, 0)), ref max);                            
+                        }
+                    }
+                }
             }
 
             max += PlotMargin;
@@ -705,7 +732,7 @@ namespace Bloom.Percsharp.Ui
             Axis leftAxis = PlotModelGeneratedData.Axes.Single(ax => ax.Position == AxisPosition.Left);
             leftAxis.Maximum = max;
             leftAxis.Minimum = -max;
-        }
+        }        
 
         private static void AdjustMaxMin(Vector v, ref double max)
         {
@@ -774,7 +801,7 @@ namespace Bloom.Percsharp.Ui
                 InputTestDataSeed = seed.ToString();
             }
 
-            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new double[] { rx, ry }), bias, points, 2);
+            DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new double[] { rx, ry }), -bias, points, 2);
             generator.run(seed);
 
             return generator;
@@ -838,11 +865,11 @@ namespace Bloom.Percsharp.Ui
             }
 
             double[] initWeight = new double[] { rx, ry };
-            PerceptronTrainer = new PerceptronTrainer(initWeight, initBias, learnRate, DataGenerator.Positives, DataGenerator.Negatives);
+            PerceptronTrainer = new PerceptronTrainer(initWeight, -initBias, learnRate, DataGenerator.Positives, DataGenerator.Negatives);
 
             if(inputTrainDataBiasedLearning ?? false)
             {
-                PerceptronTrainer.EnableBiasedLearning = true;
+                PerceptronTrainer.BiasedLearning = true;
             }
 
             Log($"Trainer initialized: weight: {PerceptronTrainer.InitWeight} bias {PerceptronTrainer.InitBias}");
@@ -886,7 +913,11 @@ namespace Bloom.Percsharp.Ui
             }
 
             PlotState();
-            PlotAddPrediction();            
+
+            if (!PerceptronTrainer.Convergence)
+            {
+                PlotAddPrediction();
+            }
 
             PerceptronTrainer.TrainStep();
             PrintState();

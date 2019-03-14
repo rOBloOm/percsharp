@@ -21,7 +21,7 @@ namespace Bloom.Percsharp.Domain
         public int MaxRuns = 5000;
         public int Errors = 0;
         public double LearningRate;
-        public bool EnableBiasedLearning = false;
+        public bool BiasedLearning = false;
 
         #region Properties
 
@@ -39,7 +39,7 @@ namespace Bloom.Percsharp.Domain
 
         public Vector SeparationLineLowerEnd => (CurrentWeight * 10).Rotate(-0.5 * Math.PI).Add(new Vector(-XDeviation, 0));
 
-        public double XDeviation => CurrentBias / CurrentWeight[0];
+        public double XDeviation => CurrentBias == 0 || CurrentWeight[0] == 0 ? 0 : CurrentBias / CurrentWeight[0];
 
         public bool IsNewPass => CurrentTrainStep == 0;
 
@@ -69,7 +69,7 @@ namespace Bloom.Percsharp.Domain
             this.Perceptron = new Perceptron(new Vector(initWeight), initBias, learningRate);
             this.Positives = positives;
             this.Negatives = negatives;
-            this.EnableBiasedLearning = false;
+            this.BiasedLearning = false;
 
             State = PerceptronTrainerState.Initialized;
         }
@@ -122,7 +122,7 @@ namespace Bloom.Percsharp.Domain
             if (CurrentTrainStep < Positives.Count)
             {
                 v = Positives[CurrentTrainStep];
-                if (EnableBiasedLearning)
+                if (BiasedLearning)
                 {
                     LearnPositiveBiased(v);
                 }
@@ -134,7 +134,7 @@ namespace Bloom.Percsharp.Domain
             else if ((CurrentTrainStep - Positives.Count) < Negatives.Count)
             {
                 v = Negatives[CurrentTrainStep - Positives.Count];
-                if(EnableBiasedLearning)
+                if(BiasedLearning)
                 {
                     LearnNegativeBiased(v);
                 }
@@ -172,7 +172,7 @@ namespace Bloom.Percsharp.Domain
             {
                 result.DataPoint = Positives[CurrentTrainStep];
                 result.isPositiveDatapoint = true;
-                if (EnableBiasedLearning)
+                if (BiasedLearning)
                 {
                     return PredictPositiveBiased(result);
                 }
@@ -186,7 +186,7 @@ namespace Bloom.Percsharp.Domain
                 result.DataPoint = Negatives[CurrentTrainStep - Positives.Count];
                 result.isPositiveDatapoint = false;
 
-                if (EnableBiasedLearning)
+                if (BiasedLearning)
                 {
                     return PredictNegativeBiased(result);
                 }

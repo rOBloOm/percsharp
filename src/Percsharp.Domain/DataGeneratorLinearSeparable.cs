@@ -57,7 +57,9 @@ namespace Bloom.Percsharp.Domain
 
                 for(int d = 0; d < Dimension; d++)
                 {
-                    data[d] = ((double)rnd.Next(-10, 10) /10) + InitBias;
+                    data[d] = ((double)rnd.Next(-10, 10) /10);
+                    if (d == 0)
+                        data[d] += XDeviation;
                 }
 
                 if(data * InitVector - InitBias > 0)
