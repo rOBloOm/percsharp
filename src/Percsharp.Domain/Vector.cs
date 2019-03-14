@@ -167,7 +167,7 @@ namespace Bloom.Percsharp.Domain
             if (vector == null)
                 return string.Empty;
 
-            return string.Join(",", vector);
+            return $"{Math.Round(vector[0], 2)},{Math.Round(vector[1], 2)}";
         }
     }
 }

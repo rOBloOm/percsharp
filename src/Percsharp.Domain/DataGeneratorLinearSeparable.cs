@@ -57,7 +57,7 @@ namespace Bloom.Percsharp.Domain
 
                 for(int d = 0; d < Dimension; d++)
                 {
-                    data[d] = ((double)rnd.Next(-10, 10) /10);
+                    data[d] = ((double)rnd.Next(-10, 10) /10) + InitBias;
                 }
 
                 if(data * InitVector - InitBias > 0)

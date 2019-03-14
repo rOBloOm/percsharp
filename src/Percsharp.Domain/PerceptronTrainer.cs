@@ -21,6 +21,9 @@ namespace Bloom.Percsharp.Domain
         public int MaxRuns = 5000;
         public int Errors = 0;
         public double LearningRate;
+        public bool EnableBiasedLearning = false;
+
+        #region Properties
 
         public double InitBias { get; private set; }
         public Vector InitWeight { get; private set; }
@@ -41,6 +44,8 @@ namespace Bloom.Percsharp.Domain
         public bool IsNewPass => CurrentTrainStep == 0;
 
         public int LastPassErrors { get; private set; }
+
+        #endregion Properties
 
         #region Constructor
 
@@ -64,6 +69,7 @@ namespace Bloom.Percsharp.Domain
             this.Perceptron = new Perceptron(new Vector(initWeight), initBias, learningRate);
             this.Positives = positives;
             this.Negatives = negatives;
+            this.EnableBiasedLearning = false;
 
             State = PerceptronTrainerState.Initialized;
         }
@@ -116,21 +122,25 @@ namespace Bloom.Percsharp.Domain
             if (CurrentTrainStep < Positives.Count)
             {
                 v = Positives[CurrentTrainStep];
-                if ((v * Perceptron.W) <= 0)
+                if (EnableBiasedLearning)
                 {
-                    Perceptron.W += LearningRate * v;
-                    //Perceptron.Bias += LearningRate;
-                    Errors++;
+                    LearnPositiveBiased(v);
+                }
+                else
+                {
+                    LearnPositive(v);
                 }
             }
             else if ((CurrentTrainStep - Positives.Count) < Negatives.Count)
             {
                 v = Negatives[CurrentTrainStep - Positives.Count];
-                if ((v * Perceptron.W) > 0)
+                if(EnableBiasedLearning)
                 {
-                    Perceptron.W -= LearningRate * v;
-                    //Perceptron.Bias -= LearningRate;
-                    Errors++;
+                    LearnNegativeBiased(v);
+                }
+                else
+                {
+                    LearnNegative(v);
                 }
             }
 
@@ -154,51 +164,161 @@ namespace Bloom.Percsharp.Domain
                 CurrentTrainStep++;
             }            
         }
-
         private PerceptronTrainerStepPrediction TrainStepPredict()
         {
             State = PerceptronTrainerState.Training;
             PerceptronTrainerStepPrediction result = new PerceptronTrainerStepPrediction();
             if (CurrentTrainStep < Positives.Count)
-            {                
+            {
                 result.DataPoint = Positives[CurrentTrainStep];
                 result.isPositiveDatapoint = true;
-                if ((result.DataPoint * this.Perceptron.W) <= 0)
+                if (EnableBiasedLearning)
                 {
-                    result.Error = true;                    
-                    result.CurrentWeight = CurrentWeight;
-                    result.Correction = result.DataPoint * LearningRate;
-                    result.ResultingWeight = result.CurrentWeight + result.Correction;
-
-                    return result;
+                    return PredictPositiveBiased(result);
                 }
                 else
                 {
-                    result.Error = false;
-                    return result;
+                    return PredictPositive(result);
                 }
             }
             else if ((CurrentTrainStep - Positives.Count) < Negatives.Count)
             {
                 result.DataPoint = Negatives[CurrentTrainStep - Positives.Count];
                 result.isPositiveDatapoint = false;
-                if ((result.DataPoint * Perceptron.W) > 0)
+
+                if (EnableBiasedLearning)
                 {
-                    result.Error = true;
-                    result.CurrentWeight = CurrentWeight;
-                    result.Correction = result.DataPoint * LearningRate * -1;
-                    result.ResultingWeight = result.CurrentWeight + result.Correction;
-                    return result;
+                    return PredictNegativeBiased(result);
                 }
                 else
                 {
-                    result.Error = false;
-                    return result;
+                    return PredictNegative(result);
                 }
             }
 
             return null;
         }
+
+        #region Learn
+        private void LearnNegative(Vector v)
+        {
+            if ((v * Perceptron.W) > 0)
+            {
+                Perceptron.W -= LearningRate * v;
+                Errors++;
+            }
+        }
+
+        private void LearnNegativeBiased(Vector v)
+        {
+            if ((v * Perceptron.W + Perceptron.Bias) > 0)
+            {
+                Perceptron.W -= LearningRate * v;
+                Perceptron.Bias -= LearningRate;
+                Errors++;
+            }
+        }
+
+        private void LearnPositive(Vector v)
+        {
+            if ((v * Perceptron.W) <= 0)
+            {
+                Perceptron.W += LearningRate * v;
+                Errors++;
+            }
+        }
+
+        private void LearnPositiveBiased(Vector v)
+        {
+            if ((v * Perceptron.W + Perceptron.Bias) <= 0)
+            {
+                Perceptron.W += LearningRate * v;
+                Perceptron.Bias += LearningRate;
+                Errors++;
+            }
+        }
+
+        #endregion Learn        
+
+        #region Predict
+
+        private PerceptronTrainerStepPrediction PredictPositiveBiased(PerceptronTrainerStepPrediction result)
+        {
+            if ((result.DataPoint * this.Perceptron.W + this.Perceptron.Bias) <= 0)
+            {
+                result.Error = true;
+                result.CurrentWeight = CurrentWeight;
+                result.Correction = result.DataPoint * LearningRate;
+                result.ResultingWeight = result.CurrentWeight + result.Correction;
+                result.CurrentBias = CurrentBias;
+                result.ResultingBias = CurrentBias + LearningRate;
+
+                return result;
+            }
+            else
+            {
+                result.Error = false;
+                return result;
+            }
+        }
+
+        private PerceptronTrainerStepPrediction PredictPositive(PerceptronTrainerStepPrediction result)
+        {
+            if ((result.DataPoint * this.Perceptron.W) <= 0)
+            {
+                result.Error = true;
+                result.CurrentWeight = CurrentWeight;
+                result.Correction = result.DataPoint * LearningRate;
+                result.ResultingWeight = result.CurrentWeight + result.Correction;
+
+                return result;
+            }
+            else
+            {
+                result.Error = false;
+                return result;
+            }
+        }
+
+        private PerceptronTrainerStepPrediction PredictNegative(PerceptronTrainerStepPrediction result)
+        {
+            if ((result.DataPoint * Perceptron.W) > 0)
+            {
+                result.Error = true;
+                result.CurrentWeight = CurrentWeight;
+                result.Correction = result.DataPoint * LearningRate * -1;
+                result.ResultingWeight = result.CurrentWeight + result.Correction;
+
+                return result;
+            }
+            else
+            {
+                result.Error = false;
+                return result;
+            }
+        }
+
+        private PerceptronTrainerStepPrediction PredictNegativeBiased(PerceptronTrainerStepPrediction result)
+        {
+            if ((result.DataPoint * Perceptron.W + Perceptron.Bias) > 0)
+            {
+                result.Error = true;
+                result.CurrentWeight = CurrentWeight;
+                result.Correction = result.DataPoint * LearningRate * -1;
+                result.ResultingWeight = result.CurrentWeight + result.Correction;
+                result.CurrentBias = CurrentBias;
+                result.ResultingBias = CurrentBias - LearningRate;
+
+                return result;
+            }
+            else
+            {
+                result.Error = false;
+                return result;
+            }
+        }
+
+        #endregion Predict
 
         #endregion Train
     }
