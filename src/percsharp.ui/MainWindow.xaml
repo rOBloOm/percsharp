@@ -99,12 +99,13 @@
                         <ColumnDefinition Width="Auto" ></ColumnDefinition>
                         <ColumnDefinition Width="Auto" ></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition Width="AUto" ></ColumnDefinition>
-                        <ColumnDefinition Width="4*"></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" ></ColumnDefinition>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition ></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
@@ -119,21 +120,24 @@
 
                     <StackPanel Grid.Column="5" Orientation="Horizontal">
                         <Button Command="{Binding RandomizeTrainingInputCommand}" Margin="5, 0, 0, 0">rnd</Button>
-                        <Label Margin="30, 0, 0, 0">Learning Rate:</Label>
+                        <Label Margin="10, 0, 0, 0">Learning Rate:</Label>
                     </StackPanel>
-                    <TextBox Grid.Column="6" Grid.Row="0" HorizontalAlignment="left" Text="{Binding InputTrainDataLearningRate}"></TextBox>
+                    <TextBox Grid.Column="6" Grid.Row="0" HorizontalAlignment="Left" Margin="7, 0, 0, 0" Text="{Binding InputTrainDataLearningRate}"></TextBox>
 
                     <Label Grid.Column="0" Grid.Row="1">Init Bias</Label>
                     <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding InputTrainDataInitBias}"></TextBox>
                     
-                    <CheckBox Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="2"
+                    <CheckBox Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="2"
                               VerticalAlignment="Bottom"
-                              Margin="5, 0, 19, 3"
-                              FlowDirection="RightToLeft"
+                              HorizontalAlignment="Right"
+                              Margin="5, 10, 5, 0"
                               IsChecked="{Binding InputTrainDataBiasedLearning}"
                               >Biased Learning</CheckBox>
-                    
-                    <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="7" 
+
+                    <Label Grid.Column="5" Grid.Row="1" HorizontalAlignment="Right">Learning Seed:</Label>
+                    <TextBox Grid.Column="6" Grid.Row="1" Width="50" Text="{Binding InputTrainingSeed}"></TextBox>
+
+                    <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="7" 
                                 Orientation="Horizontal" HorizontalAlignment="Right" 
                                 Margin="0, 10, 0, 0">
                         <Button Width="80" Margin="0, 0, 10, 0" Command="{Binding InitCommand}">Init</Button>
@@ -142,7 +146,7 @@
                         <Button Width="80" Margin="0, 0, 0, 0" Command="{Binding TrainStepErrorCommand}">Next Error</Button>
                     </StackPanel>
                    
-                    <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="7"
+                    <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="7"
                                 Margin="0, 10, 0, 0">
                         <Label Width="184"></Label>
                         <Button Width="80" Visibility="{Binding LearnButtonVisibility}" Command="{Binding TrainStepLearnCommand}">Learn!</Button>

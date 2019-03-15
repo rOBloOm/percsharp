@@ -19,6 +19,7 @@ namespace Bloom.Percsharp.Domain
         public int Errors = 0;
         public double LearningRate;
         public bool BiasedLearning = false;
+        public int Seed;
 
         #region Properties
 
@@ -48,17 +49,18 @@ namespace Bloom.Percsharp.Domain
 
         public PerceptronTrainerStepPrediction NextTrainStepPrediction => TrainStepPredict();
 
-        public PerceptronTrainer(double[] initWeiht, double initBias, double learningRate, List<Vector> positives, List<Vector> negatives)
+        public PerceptronTrainer(int seed, double[] initWeiht, double initBias, double learningRate, List<Vector> positives, List<Vector> negatives)
         {
-            this.Init(initWeiht, initBias, learningRate, positives, negatives);
+            this.Init(seed, initWeiht, initBias, learningRate, positives, negatives);
         }
 
         #endregion Constructor
 
         #region Initialization
 
-        public void Init(double[] initWeight, double initBias, double learningRate, List<Vector> positives, List<Vector> negatives)
+        public void Init(int seed, double[] initWeight, double initBias, double learningRate, List<Vector> positives, List<Vector> negatives)
         {
+            this.Seed = seed;
             this.Runs = 0;
             this.InitWeight = initWeight;
             this.InitBias = initBias;
@@ -68,7 +70,7 @@ namespace Bloom.Percsharp.Domain
             this.Datapoints = new List<PerceptronTrainerDatapoint>();
             positives.ForEach(p => this.Datapoints.Add(new PerceptronTrainerDatapoint() { Datapoint = p, IsPositive = true } ));
             negatives.ForEach(n => this.Datapoints.Add(new PerceptronTrainerDatapoint() { Datapoint = n, IsPositive = false } ));
-            Datapoints.Shuffle();
+            Datapoints.Shuffle(seed);
 
             this.BiasedLearning = false;
 
@@ -77,7 +79,7 @@ namespace Bloom.Percsharp.Domain
 
         public void Reset()
         {
-            Init(DefaultInitWeight, DefaultInitBias, DefaultLearningRate, null, null);
+            Init(this.Seed, DefaultInitWeight, DefaultInitBias, DefaultLearningRate, null, null);
         }
 
         #endregion Initialization
@@ -112,7 +114,7 @@ namespace Bloom.Percsharp.Domain
                 TrainStep();
             }
             while (!IsNewPass);
-            Datapoints.Shuffle();
+            Datapoints.Shuffle(Seed++);
 
             return Convergence;
         }             

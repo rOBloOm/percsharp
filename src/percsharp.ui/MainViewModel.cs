@@ -120,17 +120,6 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
-        private string nextStepButtonLabel;
-        public string NextStepButtonLabel
-        {
-            get => nextStepButtonLabel;
-            set
-            {
-                nextStepButtonLabel = value;
-                OnPropertyChanged(nameof(NextStepButtonLabel));
-            }
-        }
-
         private bool? inputTrainDataBiasedLearning;
         public bool? InputTrainDataBiasedLearning
         {
@@ -139,6 +128,17 @@ namespace Bloom.Percsharp.Ui
             {
                 inputTrainDataBiasedLearning = value;
                 OnPropertyChanged(nameof(InputTrainDataBiasedLearning));
+            }
+        }
+
+        private string inputTrainingSeed;
+        public string InputTrainingSeed
+        {
+            get => inputTrainingSeed;
+            set
+            {
+                inputTrainingSeed = value;
+                OnPropertyChanged(nameof(InputTrainingSeed));
             }
         }
 
@@ -347,7 +347,7 @@ namespace Bloom.Percsharp.Ui
             this.InputTrainDataVectorYValue = string.Empty;
             this.InputTrainDataLearningRate = "1";
             this.InputTrainDataInitBias = string.Empty;
-            this.NextStepButtonLabel = "Next Step";
+            this.InputTrainingSeed = "1337";
             this.InputTrainDataBiasedLearning = true;
 
             this.LearnButtonVisibility = System.Windows.Visibility.Hidden;            
@@ -865,8 +865,15 @@ namespace Bloom.Percsharp.Ui
                 initBias = 0;
             }
 
+            int seed;
+            if (!int.TryParse(InputTrainingSeed, out seed))
+            {
+                InputTrainingSeed = "1337";
+                seed = 1337;
+            }
+
             double[] initWeight = new double[] { rx, ry };
-            PerceptronTrainer = new PerceptronTrainer(initWeight, -initBias, learnRate, DataGenerator.Positives, DataGenerator.Negatives);
+            PerceptronTrainer = new PerceptronTrainer(seed, initWeight, -initBias, learnRate, DataGenerator.Positives, DataGenerator.Negatives);
 
             if(inputTrainDataBiasedLearning ?? false)
             {

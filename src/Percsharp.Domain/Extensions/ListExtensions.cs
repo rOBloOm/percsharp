@@ -12,9 +12,11 @@ namespace Bloom.Percsharp.Domain.Extensions
     /// </summary>
     public static class ListExtensions
     {
-        private static readonly Random rng = new Random();
-        public static void Shuffle<T>(this IList<T> list)
+        private static Random rng;
+        public static void Shuffle<T>(this IList<T> list, int seed)
         {
+            rng = new Random(seed);
+
             int n = list.Count;
             while (n > 1)
             {
