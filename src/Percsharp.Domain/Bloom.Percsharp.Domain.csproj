@@ -44,7 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataGeneratorLinearSeparable.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="PerceptronTrainer.cs" />
+    <Compile Include="PerceptronTrainerDatapoint.cs" />
     <Compile Include="PerceptronTrainerState.cs" />
     <Compile Include="Perceptron.cs" />
     <Compile Include="PerceptronTrainerStepPrediction.cs" />

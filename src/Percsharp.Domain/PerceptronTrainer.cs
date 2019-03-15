@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Bloom.Percsharp.Domain.Extensions;
 
 namespace Bloom.Percsharp.Domain
 {
@@ -13,8 +11,7 @@ namespace Bloom.Percsharp.Domain
         private static double DefaultLearningRate = 1;
         
         private Perceptron Perceptron;
-        private List<Vector> Positives;
-        private List<Vector> Negatives;
+        private List<PerceptronTrainerDatapoint> Datapoints;
 
         public PerceptronTrainerState State { get; private set; }
         public int Runs = 0;
@@ -67,8 +64,12 @@ namespace Bloom.Percsharp.Domain
             this.InitBias = initBias;
             this.LearningRate = learningRate;
             this.Perceptron = new Perceptron(new Vector(initWeight), initBias, learningRate);
-            this.Positives = positives;
-            this.Negatives = negatives;
+
+            this.Datapoints = new List<PerceptronTrainerDatapoint>();
+            positives.ForEach(p => this.Datapoints.Add(new PerceptronTrainerDatapoint() { Datapoint = p, IsPositive = true } ));
+            negatives.ForEach(n => this.Datapoints.Add(new PerceptronTrainerDatapoint() { Datapoint = n, IsPositive = false } ));
+            Datapoints.Shuffle();
+
             this.BiasedLearning = false;
 
             State = PerceptronTrainerState.Initialized;
@@ -104,13 +105,14 @@ namespace Bloom.Percsharp.Domain
         
         public bool TrainPass()
         {
-            State = PerceptronTrainerState.Training;
+            State = PerceptronTrainerState.Training;            
 
             do
             {
                 TrainStep();
             }
             while (!IsNewPass);
+            Datapoints.Shuffle();
 
             return Convergence;
         }             
@@ -118,33 +120,32 @@ namespace Bloom.Percsharp.Domain
         public void TrainStep()
         {
             State = PerceptronTrainerState.Training;
-            Vector v;
-            if (CurrentTrainStep < Positives.Count)
+
+            PerceptronTrainerDatapoint CurrentDatapoint = Datapoints[CurrentTrainStep];
+            if(CurrentDatapoint.IsPositive)
             {
-                v = Positives[CurrentTrainStep];
                 if (BiasedLearning)
                 {
-                    LearnPositiveBiased(v);
+                    LearnPositiveBiased(CurrentDatapoint.Datapoint);
                 }
                 else
                 {
-                    LearnPositive(v);
+                    LearnPositive(CurrentDatapoint.Datapoint);
                 }
             }
-            else if ((CurrentTrainStep - Positives.Count) < Negatives.Count)
+            else
             {
-                v = Negatives[CurrentTrainStep - Positives.Count];
-                if(BiasedLearning)
+                if (BiasedLearning)
                 {
-                    LearnNegativeBiased(v);
+                    LearnNegativeBiased(CurrentDatapoint.Datapoint);
                 }
                 else
                 {
-                    LearnNegative(v);
+                    LearnNegative(CurrentDatapoint.Datapoint);
                 }
-            }
+            }            
 
-            if(CurrentTrainStep >= Positives.Count + Negatives.Count - 1)
+            if(CurrentTrainStep >= Datapoints.Count - 1)
             {                
                 CurrentTrainStep = 0;
                 LastPassErrors = Errors;
@@ -168,9 +169,11 @@ namespace Bloom.Percsharp.Domain
         {
             State = PerceptronTrainerState.Training;
             PerceptronTrainerStepPrediction result = new PerceptronTrainerStepPrediction();
-            if (CurrentTrainStep < Positives.Count)
+
+            PerceptronTrainerDatapoint CurrentDatapoint = Datapoints[CurrentTrainStep];
+            if (CurrentDatapoint.IsPositive)
             {
-                result.DataPoint = Positives[CurrentTrainStep];
+                result.DataPoint = CurrentDatapoint.Datapoint;
                 result.isPositiveDatapoint = true;
                 if (BiasedLearning)
                 {
@@ -181,9 +184,9 @@ namespace Bloom.Percsharp.Domain
                     return PredictPositive(result);
                 }
             }
-            else if ((CurrentTrainStep - Positives.Count) < Negatives.Count)
+            else
             {
-                result.DataPoint = Negatives[CurrentTrainStep - Positives.Count];
+                result.DataPoint = CurrentDatapoint.Datapoint;
                 result.isPositiveDatapoint = false;
 
                 if (BiasedLearning)
@@ -194,9 +197,7 @@ namespace Bloom.Percsharp.Domain
                 {
                     return PredictNegative(result);
                 }
-            }
-
-            return null;
+            }            
         }
 
         #region Learn
