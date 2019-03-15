@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="http://oxyplot.org/wpf"        
     mc:Ignorable="d"
-    Title="Training a Binary Classifier with Linear Separable Data"
+    Title="Percsharp"
     Height="650"
     Width="1410"
     Background="#e5e5e5">
