@@ -717,6 +717,7 @@ namespace Bloom.Percsharp.Ui
                         if (PerceptronTrainer.BiasedLearning)
                         {
                             AdjustMaxMin(prediction.CurrentWeight.Add(new Vector(-prediction.CurrentXDeviation, 0)) + prediction.DataPoint, ref max);
+                            AdjustMaxMin(prediction.CurrentWeight.Add(new Vector(prediction.CurrentXDeviation, 0)) + prediction.DataPoint, ref max);
                             AdjustMaxMin(prediction.ResultingWeight.Add(new Vector(-prediction.ResultingXDeviation, 0)), ref max);                            
                         }
                     }
