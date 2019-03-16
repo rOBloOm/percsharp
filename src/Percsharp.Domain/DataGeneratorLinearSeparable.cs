@@ -10,44 +10,39 @@ namespace Bloom.Percsharp.Domain
     {
         public DataGeneratorLinearSeparable(Vector initVector, double bias, int size, int dimension)
         {
-            this.initVector = initVector;
-            this.initBias = bias;
-            this.size = size;
-            this.dimension = dimension;
+            this.InitVector = initVector;
+            this.InitBias = bias;
+            this.Size = size;
+            this.Dimension = dimension;
+            this.Spread = 1;
         }
 
         #region Properties
 
-        private int size;
-        public int Size => size;
+        public int Size { get; private set; }
 
-        private int dimension;
-        public int Dimension => dimension;
+        public int Dimension { get; private set; }
 
-        private Vector initVector;
-        public Vector InitVector => initVector;
+        public Vector InitVector { get; private set; }
 
-        private double initBias;
-        public double InitBias => initBias;
+        public double InitBias { get; private set; }
 
-        private List<Vector> postitives;
-        public List<Vector> Positives => postitives;
-
-        private List<Vector> negatives;
-        public List<Vector> Negatives => negatives;
+        public List<Vector> Positives { get; private set; }
+        public List<Vector> Negatives { get; private set; }
+        public double Spread { get; set; }
 
         public Vector SeparationLineUpperEnd => (InitVector * 10).Rotate(0.5 * Math.PI).Add(new Vector(XDeviation, 0));
 
         public Vector SeparationLineLowerEnd => (InitVector * 10).Rotate(-0.5 * Math.PI).Add(new Vector(XDeviation, 0));
 
-        public double XDeviation => InitBias / initVector[0]; 
+        public double XDeviation => InitBias / InitVector[0]; 
 
         #endregion Properties
 
         public void run(int seed)
         {
-            negatives = new List<Vector>();
-            postitives = new List<Vector>();
+            Negatives = new List<Vector>();
+            Positives = new List<Vector>();
 
             Random rnd = new Random(seed);
 
@@ -57,7 +52,7 @@ namespace Bloom.Percsharp.Domain
 
                 for(int d = 0; d < Dimension; d++)
                 {
-                    data[d] = ((double)rnd.Next(-100, 100) /100);
+                    data[d] = ((double)rnd.Next(-100, 100) /100) * Spread;
                     
                     if (d == 0)
                         data[d] += XDeviation;
@@ -66,12 +61,12 @@ namespace Bloom.Percsharp.Domain
                 //Introduce a very small additional deviation from zero to account for rounding error when classifing points on the separation line
                 if (data * InitVector - InitBias > 0.001)
                 {                    
-                    postitives.Add(data);
+                    Positives.Add(data);
                 }
                 else
                 {
                     Console.WriteLine(data);
-                    negatives.Add(data);
+                    Negatives.Add(data);
                 }
             }
         }

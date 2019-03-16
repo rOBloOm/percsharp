@@ -72,6 +72,17 @@ namespace Bloom.Percsharp.Ui
             }
         }
 
+        private string inputTestDataSpread;
+        public string InputTestDataSpread
+        {
+            get => inputTestDataSpread;
+            set
+            {
+                inputTestDataSpread = value;
+                OnPropertyChanged(nameof(InputTestDataSpread));
+            }
+        }
+
         #endregion Test Data Properties
 
         #region Training Data Properties
@@ -802,7 +813,14 @@ namespace Bloom.Percsharp.Ui
                 InputTestDataSeed = seed.ToString();
             }
 
+            if(!double.TryParse(InputTestDataSpread, out double spread))
+            {
+                spread = 1;
+                InputTestDataSpread = "1";
+            }
+
             DataGeneratorLinearSeparable generator = new DataGeneratorLinearSeparable(new Vector(new double[] { rx, ry }), -bias, points, 2);
+            generator.Spread = spread;
             generator.run(seed);
 
             return generator;
