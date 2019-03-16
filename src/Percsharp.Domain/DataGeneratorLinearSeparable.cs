@@ -57,21 +57,20 @@ namespace Bloom.Percsharp.Domain
 
                 for(int d = 0; d < Dimension; d++)
                 {
-                    data[d] = ((double)rnd.Next(-10, 10) /10);
-
-                    //Introduce a very small additional deviation to account for rounding error when classifing points near deviation line
+                    data[d] = ((double)rnd.Next(-100, 100) /100);
+                    
                     if (d == 0)
-                        data[d] += XDeviation + 0.001;
+                        data[d] += XDeviation;
                 }
 
-                Console.WriteLine(data);
-
-                if(data * InitVector - InitBias > 0)
-                {
+                //Introduce a very small additional deviation from zero to account for rounding error when classifing points on the separation line
+                if (data * InitVector - InitBias > 0.001)
+                {                    
                     postitives.Add(data);
                 }
                 else
                 {
+                    Console.WriteLine(data);
                     negatives.Add(data);
                 }
             }

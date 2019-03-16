@@ -116,7 +116,7 @@ namespace Bloom.Percsharp.Domain
         public double DotProduct(Vector other)
         {
             if (this.Size != other.Size)
-                throw new Exception("Scalar product not supported when vectors are not the same size");
+                throw new Exception("Dot product not supported when vectors are not the same size");
 
             double sum = 0;
             for (int i = 0; i < Size; i++)
