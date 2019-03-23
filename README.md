@@ -2,7 +2,7 @@
 
 ..so in case anyone accidentially stumbles upon this repo:
 
-The applications visualizes the step by step learning process of a binary classifier (Percpetron) with two inputs using generated test data. It was created as part of my journey learning how anns work.
+The applications visualizes the step by step learning process of a binary classifier (Perceptron) with two inputs using generated test data. It was created as part of my journey learning how anns work.
 
 ### Features
 - Parameterized test data generation
